@@ -1,0 +1,40 @@
+/* Apenas o aplicativo identificado pelo User-Agent; desktop preservado. */
+html.simplifique-android .login-tabs,html.simplifique-android #central-login{display:none!important}
+html.simplifique-android #driver-login:not([hidden]){display:block}
+html.simplifique-android .login-pane{padding:24px 18px;min-height:0}
+html.simplifique-android .login{min-height:100dvh;padding:16px 0}
+html.simplifique-android .login-shell{min-height:0}
+html.simplifique-android .login-pane>p{line-height:1.5}
+html.simplifique-android .btn,html.simplifique-android .input,html.simplifique-android .select{min-height:48px;font-size:16px}
+html.simplifique-android textarea{font:inherit}
+html.simplifique-android #driver-app{padding-top:0;min-height:100dvh}
+html.simplifique-android #driver-app .topbar{position:sticky;height:auto;min-height:72px;flex-wrap:wrap;padding:10px 12px;gap:8px;overflow:visible}
+html.simplifique-android #driver-app .topbar-left{flex:1 1 200px;gap:10px}
+html.simplifique-android #driver-app .topbar-right{margin-left:auto;gap:8px}
+html.simplifique-android #driver-app .app-title{min-width:0;overflow-wrap:anywhere}
+html.simplifique-android #driver-app .workspace.driver{width:100%!important;max-width:720px!important;margin:auto!important;padding:12px 12px 28px!important}
+html.simplifique-android #driver-app .driver-journey-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));overflow:visible;padding:2px}
+html.simplifique-android #driver-app .journey-chip{width:100%;min-width:0;max-width:none;min-height:64px;white-space:normal}
+html.simplifique-android #driver-app .delivery-title{flex-wrap:wrap;gap:8px}
+html.simplifique-android #driver-app .delivery-title>div{min-width:0;flex:1 1 170px}
+html.simplifique-android #driver-app .delivery-card,html.simplifique-android #driver-app .hero-status{overflow-wrap:anywhere}
+html.simplifique-android .badge,html.simplifique-android .order-tag{white-space:normal;overflow-wrap:anywhere}
+html.simplifique-android #driver-app .delivery-actions{grid-template-columns:minmax(0,1fr)}
+html.simplifique-android #driver-app .delivery-actions .btn{width:100%;font-size:16px;min-height:52px;text-align:center;white-space:normal}
+html.simplifique-android #driver-app summary{padding:12px 0;min-height:48px;font-size:14px}
+html.simplifique-android .driver-section-title{flex-wrap:wrap}
+html.simplifique-android #return-dialog,html.simplifique-android #pendency-dialog{width:calc(100% - 16px)!important;max-width:690px;max-height:calc(100dvh - 16px);margin:auto}
+html.simplifique-android #pendency-dialog .modal-body{max-height:calc(100dvh - 150px);padding:14px}
+html.simplifique-android #return-dialog .modal-body{padding:14px}
+html.simplifique-android .modal-head{padding:14px;gap:8px;align-items:flex-start}
+html.simplifique-android .modal-head>div{min-width:0;overflow-wrap:anywhere}
+html.simplifique-android .modal-head h2{font-size:19px}
+html.simplifique-android .modal-head>.btn{flex-shrink:0;padding:8px}
+html.simplifique-android #pendency-dialog .form-grid{grid-template-columns:minmax(0,1fr)}
+html.simplifique-android #pendency-dialog .form-grid>.field{grid-column:1/-1;min-width:0}
+html.simplifique-android #pendency-dialog input[type=file]{font-size:14px;max-width:100%;min-height:52px}
+html.simplifique-android #pendency-dialog .modal-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+html.simplifique-android .field label{font-size:13px}
+html.simplifique-android input,html.simplifique-android select,html.simplifique-android textarea{scroll-margin-block:90px}
+html.simplifique-android #loading{max-width:calc(100vw - 24px)}
+html.simplifique-android .loading-box{white-space:normal}

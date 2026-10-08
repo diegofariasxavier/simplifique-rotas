@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#132f55">
+  <title>Rota Simples</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{
+      --navy:#132f55;--navy2:#0c2341;--blue:#245b94;--orange:#f49b16;--page:#f3f6fa;
+      --surface:#fff;--text:#18263a;--muted:#68788d;--line:#dde5ef;--green:#178653;
+      --red:#c73b3b;--amber:#b36b00;--purple:#6d4bb8;--shadow:0 16px 42px rgba(20,45,78,.10);
+      --radius:16px
+    }
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:var(--page)}
+    button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}
+    [hidden]{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.nowrap{white-space:nowrap}
+    .logo{display:block;object-fit:contain}.logo-box{background:#fff;border-radius:12px;padding:7px 10px;display:inline-flex;align-items:center}
+    .login{min-height:100vh;display:grid;place-items:center;padding:24px;background:
+      radial-gradient(circle at 15% 15%,rgba(244,155,22,.14),transparent 28%),
+      linear-gradient(135deg,#eef3f9,#f8fafc)}
+    .login-shell{width:min(1020px,100%);min-height:590px;display:grid;grid-template-columns:1.05fr .95fr;background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:var(--shadow)}
+    .login-brand{background:linear-gradient(145deg,var(--navy2),var(--navy));padding:48px;color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+    .login-brand .logo{width:250px;height:auto}.login-brand h1{font-size:44px;line-height:1.03;margin:50px 0 14px}.login-brand p{color:rgba(255,255,255,.76);font-size:17px;line-height:1.6;max-width:470px}
+    .brand-points{display:grid;gap:14px;margin-top:34px}.brand-point{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.88)}
+    .brand-dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);font-weight:700}
+    .login-pane{padding:48px;display:grid;align-content:center}.login-pane h2{margin:0;font-size:29px}.login-pane>p{margin:8px 0 24px;color:var(--muted)}
+    .login-tabs{display:grid;grid-template-columns:1fr 1fr;background:#edf2f7;padding:4px;border-radius:11px;margin-bottom:22px}
+    .login-tab{border:0;background:transparent;border-radius:8px;padding:10px;font-weight:700;color:#586a80}.login-tab.active{background:#fff;color:var(--navy);box-shadow:0 3px 10px rgba(20,45,78,.08)}
+    .field{display:grid;gap:7px;margin-bottom:14px}.field label{font-size:12px;font-weight:700;color:#43546b;text-transform:uppercase;letter-spacing:.03em}
+    .input,.select{width:100%;min-height:44px;border:1px solid #cbd6e3;border-radius:10px;background:#fff;color:var(--text);padding:10px 12px;outline:none}
+    .input:focus,.select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(36,91,148,.12)}
+    .btn{border:1px solid #cbd6e3;background:#fff;color:#263850;border-radius:10px;min-height:40px;padding:9px 14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+    .btn:hover{background:#f3f6fa}.btn-primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn-primary:hover{background:#1a426f}
+    .btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}.btn-orange{background:var(--orange);border-color:var(--orange);color:#16253a}
+    .btn-green{background:var(--green);border-color:var(--green);color:#fff}.btn-danger{background:#fff2f2;border-color:#f1c9c9;color:var(--red)}
+    .btn-block{width:100%}.login-note{font-size:12px;color:var(--muted);text-align:center;margin-top:13px}
+    .error-box{background:#fff0f0;color:#a92222;border:1px solid #f0c6c6;border-radius:9px;padding:10px 12px;font-size:13px;margin:10px 0}
+    .app{min-height:100vh;padding-top:72px}.topbar{height:72px;background:var(--navy);color:#fff;position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 24px;box-shadow:0 5px 18px rgba(5,25,50,.18)}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:14px}.topbar .logo{width:150px}.app-title strong,.app-title span{display:block}.app-title strong{font-size:16px}.app-title span{font-size:11px;color:rgba(255,255,255,.7)}
+    .topbar .btn{border-color:rgba(255,255,255,.22);background:transparent;color:#fff;min-height:34px;padding:6px 10px}.topbar .btn:hover{background:rgba(255,255,255,.1)}
+    .workspace{max-width:1500px;margin:auto;padding:24px}.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.nav .btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+    .page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}.page-head h1{margin:0;font-size:28px}.page-head p{margin:5px 0 0;color:var(--muted)}
+    .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:20px}.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:0 6px 20px rgba(20,45,78,.05)}
+    .kpi span{display:block;color:var(--muted);font-size:12px;font-weight:700}.kpi strong{display:block;font-size:27px;margin-top:5px;color:var(--navy)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 7px 24px rgba(20,45,78,.055);overflow:hidden}.card+.card{margin-top:18px}
+    .card-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.card-head h2,.card-head h3{margin:0}.card-head h2{font-size:19px}.card-head h3{font-size:16px}.card-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.card-body{padding:18px}
+    .route-grid{display:grid;grid-template-columns:1fr;gap:13px}.route-card{border:1px solid var(--line);border-left:5px solid #9aa9ba;border-radius:14px;background:#fff;display:grid;grid-template-columns:minmax(235px,285px) minmax(0,1fr);overflow:hidden;transition:.16s ease}
+    .route-card:hover{border-color:#b8c6d7;border-left-color:inherit;box-shadow:0 8px 18px rgba(20,45,78,.07)}.route-card.route-wait{border-left-color:#d98a11;background:linear-gradient(90deg,#fffaf1 0,#fff 26%)}.route-card.route-release{border-left-color:#3976b9;background:linear-gradient(90deg,#f4f8ff 0,#fff 26%)}.route-card.route-moving{border-left-color:#1d9360;background:linear-gradient(90deg,#f3fbf7 0,#fff 26%)}.route-card.route-returning{border-left-color:#7652b6;background:linear-gradient(90deg,#f8f5fd 0,#fff 26%)}.route-card.route-done{border-left-color:#168653;background:linear-gradient(90deg,#f1fbf6 0,#fff 26%)}.route-card.route-alert{border-left-color:var(--red);background:linear-gradient(90deg,#fff4f4 0,#fff 26%)}
+    .route-summary{padding:15px 16px;border-right:1px solid #edf1f6;display:grid;align-content:center;gap:9px}.route-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.route-title strong{font-size:16px;line-height:1.25}.route-title span{display:block;color:var(--muted);font-size:11px;margin-top:3px}.route-meta-inline{display:flex;gap:6px 12px;flex-wrap:wrap;color:#506177;font-size:11px}.route-meta-inline strong{color:var(--text)}
+    .route-tags{display:flex;gap:6px;flex-wrap:wrap}.attention-tag{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:800;background:#eef2f7;color:#53657a}.attention-tag.warn{background:#fff0d7;color:#916000}.attention-tag.info{background:#e8f1ff;color:#245b94}.attention-tag.live{background:#e7f7ef;color:#14714a}.attention-tag.danger{background:#ffe8e8;color:#ad2c2c}.attention-tag.purple{background:#f0eafb;color:#6546aa}
+    .timeline-wrap{min-width:0;overflow-x:auto;padding:14px 18px 12px}.route-timeline{display:flex;align-items:flex-start;min-width:max-content;padding:4px 2px 2px}.timeline-step{width:96px;display:grid;justify-items:center;text-align:center;position:relative;z-index:1}.timeline-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:3px solid #d4dde8;background:#fff;box-shadow:0 0 0 3px #fff}.timeline-step span{font-size:10px;font-weight:800;color:#596a80;line-height:1.25;margin-top:7px;max-width:94px}.timeline-step small{font-size:9px;color:#8a98aa;margin-top:3px;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.timeline-link{height:4px;width:46px;background:#e1e7ef;margin:9px -12px 0;flex:0 0 auto;border-radius:999px}.timeline-step.done .timeline-dot{background:#1e955f;border-color:#1e955f}.timeline-step.done .timeline-dot:after{content:'✓';color:#fff;font-size:11px;font-weight:900}.timeline-step.done span{color:#18744d}.timeline-step.return .timeline-dot{background:#ce3e3e;border-color:#ce3e3e}.timeline-step.return .timeline-dot:after{content:'!';color:#fff;font-size:12px;font-weight:900}.timeline-step.return span{color:#aa2e2e}.timeline-step.active .timeline-dot{background:#fff;border-color:#6d4bb8;box-shadow:0 0 0 4px #eee8fa}.timeline-step.active span{color:#5f42a0}.timeline-step.wait .timeline-dot{background:#fff;border-color:#d5dee9}.timeline-link.done{background:#83c9a8}.timeline-link.active{background:linear-gradient(90deg,#83c9a8,#d7c9ef)}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;white-space:nowrap;background:#edf1f6;color:#52637a}
+    .s-wait{background:#fff2dc;color:#966000}.s-release{background:#e7f0ff;color:#245b94}.s-route{background:#e9f7ef;color:#14714a}.s-client{background:#f1ebfb;color:#6d4bb8}.s-return{background:#fff0f0;color:#b53030}.s-done{background:#e9f7ef;color:#14714a}
+    .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+    table{border-collapse:collapse;width:100%;min-width:950px}th,td{padding:11px 12px;border-bottom:1px solid #edf1f6;text-align:left;font-size:13px;vertical-align:middle}th{background:#f7f9fc;color:#53657b;font-size:11px;text-transform:uppercase;letter-spacing:.03em}tbody tr:last-child td{border-bottom:0}
+    .clickable{cursor:pointer}.clickable:hover td{background:#fafcff}.attention{color:var(--red);font-weight:800}
+    .import-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.75fr);gap:18px}.drop-zone{border:2px dashed #b9c7d7;border-radius:16px;padding:34px;text-align:center;background:#f8fafc}
+    .drop-zone.drag{border-color:var(--blue);background:#edf4fb}.drop-zone input{display:none}.drop-zone h3{margin:8px 0 5px}.drop-zone p{margin:0 0 18px;color:var(--muted)}
+    .preview-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.preview-stat{background:#f6f8fb;border-radius:10px;padding:10px}.preview-stat span{display:block;color:var(--muted);font-size:11px}.preview-stat strong{font-size:18px}
+    .friday{border:1px solid #f0d7aa;background:#fff8eb;border-radius:11px;padding:11px;margin-top:10px}.friday strong{display:block;margin-bottom:7px}
+    .invalid-list{max-height:160px;overflow:auto;font-size:12px;color:var(--red);margin-top:10px}.invalid-list div{padding:5px 0;border-bottom:1px solid #f7dddd}
+    .empty{padding:34px;text-align:center;color:var(--muted)}.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    dialog{border:0;border-radius:18px;padding:0;box-shadow:0 30px 80px rgba(10,30,55,.28);width:min(1050px,calc(100vw - 24px));max-height:88vh;color:var(--text)}
+    dialog::backdrop{background:rgba(7,22,42,.55)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
+    .modal-head h2{margin:0;font-size:20px}.modal-body{padding:20px;overflow:auto}.modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);margin-top:18px}
+    .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-12{grid-column:span 12}
+    .delivery-edit{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}.delivery-edit-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}.delivery-edit-head strong{font-size:14px}
+    .alert{border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:13px}.alert-warn{background:#fff6e8;border:1px solid #f0d7ab;color:#895a0d}.alert-danger{background:#fff0f0;border:1px solid #f0c6c6;color:#9d2929}.alert-info{background:#edf4fb;border:1px solid #c7daee;color:#285781}
+    #driver-app{background:#eef2f6}.driver{max-width:560px;margin:auto}.driver-head{display:flex;gap:10px;overflow:auto;margin-bottom:15px;padding:2px 1px 5px;scrollbar-width:none}.driver-head::-webkit-scrollbar{display:none}.route-chip{min-width:180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 12px;text-align:left;box-shadow:0 4px 13px rgba(20,45,78,.04)}.route-chip.active{border-color:var(--navy);box-shadow:0 0 0 2px rgba(19,47,85,.10)}
+    .hero-status{background:linear-gradient(140deg,var(--navy),#1d4d80);color:#fff;border-radius:19px;padding:20px;margin-bottom:14px;box-shadow:0 10px 28px rgba(13,43,77,.18)}.hero-status h1{margin:5px 0 4px;font-size:25px}.hero-status p{margin:0;color:rgba(255,255,255,.78);line-height:1.45}.operation-banner{display:inline-flex;margin-top:10px;padding:6px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.11);font-size:12px;font-weight:800;color:#fff}
+    .driver-section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:19px 2px 10px}.driver-section-title strong{font-size:18px}.driver-section-title span{font-size:12px;color:var(--muted)}
+    .driver-action{display:grid;gap:10px}.big-btn{min-height:58px;font-size:16px;border-radius:14px}
+    .delivery-card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:12px;box-shadow:0 5px 16px rgba(20,45,78,.045)}.delivery-card.active{border-color:var(--blue);box-shadow:0 0 0 2px rgba(36,91,148,.08),0 7px 20px rgba(20,45,78,.07)}
+    .delivery-sequence{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--blue);margin-bottom:8px}.delivery-title{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.delivery-title h3{margin:0;font-size:18px;line-height:1.25}.delivery-address{margin:12px 0;color:#31445c;line-height:1.5;background:#f6f8fb;border:1px solid #edf1f6;border-radius:12px;padding:12px;font-size:15px}.order-tags{display:flex;flex-wrap:wrap;gap:6px}.order-tag{background:#f1f4f8;border-radius:7px;padding:5px 8px;font-size:11px;font-weight:800}
+    .delivery-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.delivery-actions .btn{min-width:0;min-height:50px;padding:9px 10px}.delivery-actions .delivery-main-action{grid-column:1/-1;min-height:58px;font-size:16px}
+    .toast-stack{position:fixed;right:18px;bottom:18px;z-index:100;display:grid;gap:8px;width:min(380px,calc(100vw - 36px))}.toast{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:11px;padding:12px 14px;box-shadow:var(--shadow)}.toast.error{border-left-color:var(--red)}.toast.success{border-left-color:var(--green)}.toast strong,.toast span{display:block}.toast span{font-size:12px;color:var(--muted);margin-top:2px}
+    .loading{position:fixed;inset:0;background:rgba(245,248,252,.78);backdrop-filter:blur(2px);z-index:120;display:grid;place-items:center}.loading-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:11px;font-weight:700}.spinner{width:20px;height:20px;border:3px solid #dfe6ef;border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+    .bulk-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 12px;padding:10px 12px;border:1px solid var(--line);background:#f8fafc;border-radius:12px}.bulk-actions .spacer{flex:1}.route-group-tag{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#ede8fb;color:#5e43a0;font-size:10px;font-weight:800}.route-select{width:18px;height:18px;accent-color:var(--navy)}.journey-card{border:1px solid var(--line);border-left:5px solid #245b94;border-radius:14px;background:#fff;padding:12px;box-shadow:0 5px 15px rgba(20,45,78,.04)}.journey-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:10px}.journey-head strong{font-size:15px;color:var(--navy)}.journey-head span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.journey-count{text-align:right;font-size:10px;color:var(--muted);white-space:nowrap}.journey-count strong{display:block;font-size:15px;color:var(--text)}.journey-progress{display:flex;align-items:center;overflow:auto;padding:4px 0 2px;scrollbar-width:thin}.journey-node{width:24px;height:24px;flex:0 0 24px;border-radius:50%;display:grid;place-items:center;border:2px solid #d7dfe9;background:#fff;color:#6c7c90;font-size:9px;font-weight:900}.journey-node.done{background:#1e955f;border-color:#1e955f;color:#fff}.journey-node.return{background:#ce3e3e;border-color:#ce3e3e;color:#fff}.journey-node.active{background:#f3effb;border-color:#6d4bb8;color:#5f42a0}.journey-link{height:3px;min-width:10px;flex:1;background:#e1e7ef}.journey-link.done{background:#83c9a8}.journey-link.active{background:linear-gradient(90deg,#83c9a8,#d7c9ef)}.journey-summary{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.journey-summary .order-tag{font-size:10px}.vehicle-journey-lanes{display:grid;gap:8px}.vehicle-journey-lane{border-top:1px solid #edf1f6;padding-top:9px}.vehicle-journey-lane:first-child{border-top:0;padding-top:0}.journey-lane-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.journey-lane-head strong{font-size:11px;color:var(--text)}.journey-lane-head .badge{font-size:9px;padding:3px 6px}.stop-type{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;background:#eef3f9;color:#35546f}.stop-type.coleta{background:#fff1dc;color:#9b6200}.stop-type.loja{background:#e8f2ff;color:#225e9b}.stop-group{background:#eee8fb;color:#6043a4}.stop-loads{font-size:11px;color:var(--muted);margin:5px 0 0}.driver-journey-tabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px;scrollbar-width:none}.driver-journey-tabs::-webkit-scrollbar{display:none}.journey-chip{min-width:155px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 11px;text-align:left}.journey-chip.active{border-color:var(--navy);box-shadow:0 0 0 2px rgba(19,47,85,.10)}
+    .mobile-login-brand{display:none}.pin-display{min-height:52px;border:1px solid #cbd6e3;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;letter-spacing:.28em;color:var(--navy);user-select:none}.pin-display.empty{font-size:14px;letter-spacing:0;color:#8a98aa;font-weight:600}.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:10px 0 14px}.pin-key{min-height:52px;border:1px solid #ced9e6;border-radius:13px;background:#f7f9fc;color:var(--navy);font-size:21px;font-weight:800}.pin-key:active{transform:scale(.98);background:#edf2f7}.dashboard-tools{display:flex;align-items:end;gap:8px}.dashboard-tools .field{margin:0;min-width:180px}.vehicle-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:12px}.vehicle-board-card{border:1px solid var(--line);border-left:5px solid #9aa9ba;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 5px 15px rgba(20,45,78,.04)}.vehicle-board-card.vehicle-wait{border-left-color:#d98a11}.vehicle-board-card.vehicle-live{border-left-color:#1d9360}.vehicle-board-card.vehicle-return{border-left-color:#7652b6}.vehicle-board-card.vehicle-done{border-left-color:#178653}.vehicle-board-card.vehicle-alert{border-left-color:var(--red)}.vehicle-board-head{display:flex;justify-content:space-between;gap:10px;padding:11px 12px 9px;border-bottom:1px solid #edf1f6}.vehicle-board-title strong{display:block;font-size:14px;color:var(--navy)}.vehicle-board-title span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.vehicle-board-count{text-align:right;font-size:10px;color:var(--muted);white-space:nowrap}.vehicle-board-count strong{display:block;font-size:14px;color:var(--text)}.vehicle-lanes{display:grid}.vehicle-route-lane{padding:9px 11px;border-bottom:1px solid #f0f3f7;cursor:pointer}.vehicle-route-lane:last-child{border-bottom:0}.vehicle-route-lane:hover{background:#fafcff}.mini-route-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.mini-route-head strong{font-size:11px}.mini-route-head .badge{font-size:9px;padding:3px 6px}.mini-progress{display:flex;align-items:center;min-width:0;overflow:hidden}.mini-node{width:19px;height:19px;flex:0 0 19px;border-radius:50%;display:grid;place-items:center;border:2px solid #d6dee8;background:#fff;color:#6b7c91;font-size:8px;font-weight:900}.mini-node.done{background:#1e955f;border-color:#1e955f;color:#fff}.mini-node.return{background:#ce3e3e;border-color:#ce3e3e;color:#fff}.mini-node.active{border-color:#6d4bb8;background:#f3effb;color:#5f42a0}.mini-link{height:3px;min-width:5px;flex:1;background:#e1e7ef}.mini-link.done{background:#83c9a8}.mini-link.active{background:linear-gradient(90deg,#83c9a8,#d7c9ef)}.mini-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:10px;color:var(--muted)}.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}.legend-dot.green{background:#1e955f}.legend-dot.red{background:#ce3e3e}.legend-dot.purple{background:#6d4bb8}.legend-dot.gray{background:#d6dee8}.loading-dialog{border:0!important;background:transparent!important;padding:0!important;box-shadow:none!important;width:auto!important;max-width:none!important;max-height:none!important;overflow:visible!important}.loading-dialog::backdrop{background:rgba(245,248,252,.80);backdrop-filter:blur(3px)}.loading-dialog .loading-box{min-width:220px;justify-content:center}.action-busy{position:relative;pointer-events:none}.action-busy:after{content:' ';width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+    @media(max-width:1050px){.kpis{grid-template-columns:repeat(3,1fr)}.route-card{grid-template-columns:230px minmax(0,1fr)}.import-grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){
+      .login{padding:0}.login-shell{grid-template-columns:1fr;border:0;border-radius:0;min-height:100vh}.login-brand{padding:20px 22px;min-height:175px}.login-brand .logo{width:190px}.login-brand h1{font-size:30px;margin:20px 0 7px}.login-brand p{font-size:14px;line-height:1.45;margin:0}.brand-points{display:none}.login-pane{padding:24px 20px 30px}.input,.select{font-size:16px;min-height:48px}
+      .topbar{padding:0 12px}.topbar .logo{width:120px}.app-title{display:none}.user-label{display:none}.workspace{padding:16px 12px}.page-head{display:block}.page-head .inline{margin-top:10px}
+      .kpis{grid-template-columns:1fr 1fr}.route-card{grid-template-columns:1fr}.route-summary{border-right:0;border-bottom:1px solid #edf1f6}.timeline-wrap{padding:12px}.filters{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.span-3,.span-4,.span-6,.span-12{grid-column:span 1}
+      #driver-app.app{padding-top:calc(64px + env(safe-area-inset-top))}#driver-app .topbar{height:calc(64px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}#driver-app .topbar .logo{width:104px}#driver-app .logo-box{padding:5px 8px;border-radius:10px}#driver-app .topbar-right{gap:6px}#driver-app .topbar .btn{min-height:44px;min-width:44px;padding:6px 9px;border-radius:12px}#driver-app .workspace.driver{padding:10px 10px calc(26px + env(safe-area-inset-bottom));max-width:none}
+      #driver-app .driver-head{position:sticky;top:calc(64px + env(safe-area-inset-top));z-index:15;margin:0 -10px 12px;padding:9px 10px 10px;background:rgba(238,242,246,.96);backdrop-filter:blur(8px)}#driver-app .route-chip{min-width:165px;min-height:64px;border-radius:14px;padding:10px 11px}#driver-app .hero-status{border-radius:16px;padding:17px;margin-bottom:12px}#driver-app .hero-status h1{font-size:22px;margin-top:4px}#driver-app .hero-status p{font-size:13px}
+      #driver-app .card{border-radius:16px}#driver-app .card-body{padding:15px}#driver-app .delivery-card{padding:14px;border-radius:16px;margin-bottom:10px}#driver-app .delivery-title h3{font-size:18px}#driver-app .delivery-address{font-size:16px;padding:12px;margin:11px 0}#driver-app .delivery-actions{grid-template-columns:1fr 1fr;gap:8px}#driver-app .delivery-actions .btn{width:100%;min-height:52px;font-size:14px}#driver-app .delivery-actions .delivery-main-action{grid-column:1/-1;min-height:60px;font-size:16px}#driver-app .big-btn{min-height:60px;font-size:16px}#driver-app .alert{font-size:14px;line-height:1.45}#driver-app .driver-section-title{margin-top:17px}
+      #return-dialog{width:100%;max-width:none;margin:auto 0 0;border-radius:20px 20px 0 0;max-height:72vh}#return-dialog .modal-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+    }
+    @media(max-width:430px){.kpis{grid-template-columns:1fr 1fr}.kpi{padding:13px}.kpi strong{font-size:23px}.topbar-right .refresh-text{display:none}#driver-app .topbar-right .btn{font-size:12px}.delivery-actions .btn{padding-left:7px;padding-right:7px}}
+    @media(max-width:760px){
+      .login{padding:0;background:#fff;display:block}.login-shell{display:block;width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none}.login-brand{display:none}.login-pane{min-height:100dvh;padding:calc(18px + env(safe-area-inset-top)) 16px calc(22px + env(safe-area-inset-bottom));align-content:start;background:#fff}.mobile-login-brand{display:flex;align-items:center;gap:11px;margin:0 0 22px}.mobile-login-brand .logo-box{border:1px solid var(--line);box-shadow:0 4px 14px rgba(20,45,78,.06)}.mobile-login-brand .logo{width:128px}.mobile-login-brand strong{font-size:18px;color:var(--navy)}.login-pane h2{font-size:27px}.login-pane>p{font-size:14px;margin-bottom:18px}.login-tabs{margin-bottom:18px}.login-tab{min-height:46px}.pin-pad{gap:8px}.pin-key{min-height:54px;font-size:22px}.vehicle-board{grid-template-columns:1fr}.dashboard-tools{align-items:stretch;margin-top:12px}.dashboard-tools .field{min-width:0;flex:1}.dashboard-tools .btn{align-self:end;min-height:48px}.mini-legend{display:none}
+    }
+
+    /* v1.7.1 — login único e experiência mobile-first do motorista */
+    .login{min-height:100dvh;display:grid;place-items:center;padding:18px;background:linear-gradient(180deg,#eef3f8,#f8fafc)}
+    .login-shell{display:block;width:min(420px,100%);min-height:0;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+    .login-brand{display:none!important}
+    .login-pane{display:block;padding:26px 22px 24px;min-height:0;background:#fff}
+    .mobile-login-brand{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 24px}
+    .mobile-login-brand .logo-box{border:1px solid var(--line);box-shadow:0 4px 14px rgba(20,45,78,.06);padding:7px 11px}
+    .mobile-login-brand .logo{width:145px;height:auto}
+    .mobile-login-brand strong{display:none}
+    .login-pane h2{font-size:28px;line-height:1.12;margin:0}
+    .login-pane>p{font-size:14px;margin:7px 0 18px}
+    .login-tabs{margin-bottom:18px}
+    .login-tab{min-height:46px}
+    .login-pane .input,.login-pane .select{font-size:16px;min-height:50px}
+    .login-pane .btn-block{min-height:50px;font-size:15px}
+    .pin-display,.pin-pad{display:none!important}
+    #driver-app .workspace.driver{width:100%;max-width:430px;margin:0 auto;padding-left:10px;padding-right:10px}
+    #driver-app .hero-status,#driver-app .card,#driver-app .delivery-card{width:100%}
+    @media(max-width:760px){
+      .login{padding:0;background:#fff;display:block}
+      .login-shell{width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none}
+      .login-pane{min-height:100dvh;padding:calc(22px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));display:block}
+      .mobile-login-brand{margin-top:4px;margin-bottom:28px}
+      .mobile-login-brand .logo{width:150px}
+      #driver-app .workspace.driver{max-width:430px!important;width:100%;margin:0 auto;padding:10px 10px calc(26px + env(safe-area-inset-bottom))}
+    }
+
+    /* v1.8.0 — monitoramento profissional, logo contida e viewport mobile real */
+    html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{width:100%;max-width:100vw;overflow-x:hidden;overscroll-behavior-x:none}
+    .topbar-left{min-width:0}
+    .topbar .logo-box{width:132px;height:50px;max-height:50px;padding:0;overflow:hidden;position:relative;flex:0 0 132px;border-radius:10px}
+    .topbar .logo{position:absolute!important;width:146px!important;height:auto!important;max-width:none!important;left:50%;top:50%;transform:translate(-50%,-50%);display:block}
+    .fleet-monitor-card .card-body{padding:12px}
+    .vehicle-board{display:grid;grid-template-columns:1fr;gap:12px}
+    .journey-card{padding:0;border-left:0;border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(20,45,78,.06)}
+    .journey-card.is-live{box-shadow:0 8px 22px rgba(23,134,83,.11);border-color:#c6ddcf}
+    .journey-head{margin:0;padding:13px 15px;background:#f8fafc;border-bottom:1px solid var(--line);align-items:center}
+    .monitor-vehicle{display:flex;align-items:center;gap:10px;min-width:0}
+    .monitor-vehicle-icon.status-alert{box-shadow:0 0 0 4px #fbe4e4}
+    .monitor-vehicle-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--navy);color:#fff;font-size:15px;flex:0 0 34px}
+    .monitor-vehicle>div{min-width:0}.monitor-vehicle strong{display:block;font-size:15px;color:var(--navy)}.monitor-vehicle span{display:block;font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vehicle-journey-lanes{display:grid;gap:0}
+    .vehicle-journey-lane{border:0;border-top:1px solid #edf1f6;padding:12px 14px;display:grid;grid-template-columns:minmax(170px,220px) minmax(280px,1fr) minmax(180px,230px);gap:16px;align-items:center;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+    .vehicle-journey-lane:first-child{border-top:0;padding-top:12px}
+    .vehicle-journey-lane:hover,.vehicle-journey-lane:focus{background:#f8fbff;outline:none}
+    .vehicle-journey-lane:focus{box-shadow:inset 0 0 0 2px rgba(36,91,148,.18)}
+    .monitor-route-meta{min-width:0}.monitor-route-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.monitor-route-meta strong{font-size:13px;color:var(--text)}.monitor-route-meta>span{display:block;font-size:10px;color:var(--muted);margin-top:5px;line-height:1.35}
+    .monitor-route-progress{min-width:0}.monitor-route-progress .journey-progress{overflow:hidden}.monitor-route-progress .journey-summary{margin-top:7px;flex-wrap:nowrap;overflow:hidden}.monitor-route-progress .order-tag{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+    .monitor-current{min-width:0;border-left:1px solid #e7edf4;padding-left:14px}.monitor-current>span{display:block;font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.monitor-current>strong{display:block;font-size:13px;color:var(--navy);margin-top:3px}.monitor-current>small{display:block;font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.monitor-detail-btn{margin-top:8px;min-height:30px;padding:5px 9px;font-size:10px;color:var(--blue);border-color:#bcd0e5;background:#f7fbff}
+    .journey-detail-dialog{width:min(980px,calc(100vw - 28px));max-height:88vh}
+    .journey-detail-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:16px;border:1px solid #cbdcec;background:linear-gradient(135deg,#f4f9ff,#fff);border-radius:14px;margin-bottom:14px}.journey-detail-hero h3{margin:3px 0 4px;font-size:21px;color:var(--navy)}.journey-detail-hero p{margin:0;color:var(--muted);font-size:12px}.detail-eyebrow{font-size:9px;font-weight:900;letter-spacing:.08em;color:var(--blue)}
+    .journey-detail-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}.journey-detail-metrics>div{border:1px solid var(--line);border-radius:11px;padding:11px;background:#fff}.journey-detail-metrics span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.04em}.journey-detail-metrics strong{display:block;margin-top:4px;font-size:13px;color:var(--text)}
+    .detail-times{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.detail-time{border:1px solid var(--line);background:#f8fafc;border-radius:10px;padding:8px 10px}.detail-time span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:800}.detail-time strong{display:block;font-size:11px;margin-top:2px}
+    .detail-stop-list{display:grid;gap:9px}.detail-stop{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;border:1px solid var(--line);border-left:4px solid #cfd8e4;border-radius:12px;padding:11px;background:#fff}.detail-stop.done{border-left-color:var(--green)}.detail-stop.return{border-left-color:var(--red)}.detail-stop.active{border-left-color:var(--purple);background:#fbf9ff}.detail-stop-index{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#eef2f7;color:var(--navy);font-weight:900;font-size:12px}.detail-stop-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.detail-stop-head strong{display:block;font-size:14px;color:var(--text)}.detail-stop-head span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.detail-stop-info{display:flex;gap:7px 14px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--muted)}.detail-stop-info strong{color:var(--text)}.detail-stop-times{display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;font-size:9px;color:var(--muted)}.detail-return{margin:8px 0 0;padding:8px 10px}
+    #driver-app{width:100dvw;max-width:100dvw;overflow-x:hidden}
+    #driver-app .topbar{width:100dvw;max-width:100dvw;overflow:hidden}
+    #driver-app .topbar-left{flex:1 1 auto;min-width:0}
+    #driver-app .topbar-right{flex:0 0 auto;min-width:0}
+    #driver-app .workspace.driver{width:100%;max-width:430px;min-width:0;margin:0 auto;overflow-x:hidden}
+    #driver-app .driver-head,#driver-app #driver-content,#driver-app .hero-status,#driver-app .delivery-card,#driver-app .card{max-width:100%;min-width:0}
+    #driver-app .delivery-title,#driver-app .delivery-actions,#driver-app .order-tags,#driver-app details{min-width:0}
+    #driver-app button,#driver-app a{touch-action:manipulation}
+    @media(max-width:1050px){
+      .vehicle-journey-lane{grid-template-columns:180px minmax(0,1fr) 190px;gap:12px}
+      .journey-detail-metrics{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:760px){
+      body{min-width:0}
+      .topbar .logo-box{width:92px;height:44px;flex-basis:92px}.topbar .logo{width:104px!important}
+      #driver-app .topbar .logo-box{width:88px;height:42px;flex:0 0 88px;padding:0}
+      #driver-app .topbar .logo{width:100px!important}
+      #driver-app .workspace.driver{width:100dvw!important;max-width:100dvw!important;margin:0!important;padding:10px 10px calc(24px + env(safe-area-inset-bottom))!important}
+      #driver-app .driver-head{width:calc(100% + 20px);max-width:calc(100% + 20px);margin-left:-10px;margin-right:-10px}
+      #driver-app .route-chip,#driver-app .journey-chip{flex:0 0 150px;min-width:150px;max-width:150px}
+      #driver-app .hero-status{padding:15px;border-radius:15px}
+      #driver-app .hero-status h1{font-size:20px}
+      #driver-app .delivery-card{padding:13px;margin-bottom:10px}
+      #driver-app .delivery-title h3{font-size:17px}
+      #driver-app .delivery-address{font-size:15px;word-break:break-word}
+      #driver-app .delivery-actions{grid-template-columns:1fr 1fr}
+      #driver-app .delivery-actions .btn{font-size:14px}
+      .journey-detail-dialog{width:100%;max-width:none;margin:auto 0 0;border-radius:20px 20px 0 0;max-height:88dvh}
+      .journey-detail-metrics{grid-template-columns:1fr 1fr}
+      .detail-stop-head{display:block}.detail-stop-head .badge{margin-top:6px}
+    }
+
+
+
+    /* v1.9.0 — cliente na lista de rotas + unificação automática por cliente/destino */
+    #central-dashboard .dashboard-head{display:grid;grid-template-columns:minmax(250px,auto) minmax(0,1fr) auto;align-items:end;gap:14px;margin-bottom:12px}
+    #central-dashboard .dashboard-title h1{margin:0;font-size:26px;line-height:1.05}
+    #central-dashboard .dashboard-title p{margin:5px 0 0;color:var(--muted);font-size:12px}
+    #central-dashboard .kpis{display:flex;align-items:center;justify-content:center;gap:7px;margin:0;min-width:0}
+    #central-dashboard .kpi{min-width:96px;max-width:128px;flex:1 1 0;min-height:46px;padding:7px 9px;border-radius:10px;box-shadow:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    #central-dashboard .kpi span{font-size:9px;line-height:1.12;text-transform:uppercase;letter-spacing:.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #central-dashboard .kpi strong{font-size:19px;line-height:1;margin:0;flex:0 0 auto}
+    #central-dashboard .dashboard-tools{align-items:end;gap:6px}
+    #central-dashboard .dashboard-tools .field{min-width:145px}
+    #central-dashboard .dashboard-tools .field label{font-size:9px;margin-bottom:1px}
+    #central-dashboard .dashboard-tools .input{min-height:38px;padding:7px 9px}
+    #central-dashboard .dashboard-tools .btn{min-height:38px;padding:7px 10px}
+    #central-dashboard .fleet-monitor-card .card-head{padding:13px 15px}
+    #central-dashboard .fleet-monitor-card .card-head h2{font-size:17px}
+    #central-dashboard .fleet-monitor-card .card-body{padding:9px}
+    #central-dashboard .vehicle-board{gap:8px}
+    @media(max-width:1180px){
+      #central-dashboard .dashboard-head{grid-template-columns:1fr auto;align-items:end}
+      #central-dashboard .kpis{grid-column:1/-1;grid-row:2;justify-content:flex-start}
+      #central-dashboard .kpi{max-width:125px}
+    }
+    @media(max-width:760px){
+      #central-dashboard .dashboard-head{display:block}
+      #central-dashboard .dashboard-tools{margin-top:10px}
+      #central-dashboard .kpis{margin-top:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+      #central-dashboard .kpi{max-width:none;min-width:0;min-height:42px}
+      #central-dashboard .kpi span{font-size:8px}
+      #central-dashboard .kpi strong{font-size:17px}
+    }
+  </style>
+
+  <style>
+    #pendency-dialog .item-card {padding:15px;margin-top:12px;background:#f9fbfe;border:1px solid #dbe4ef;border-radius:13px}
+    #pendency-dialog .item-card>.inline {margin-bottom:8px}
+    #pendency-dialog .field {margin-top:12px}
+    #pendency-dialog .modal-body {max-height:calc(88vh - 68px);overflow-y:auto}
+    #pendency-dialog input[type=file] {padding:9px;min-width:0;font-size:12px}
+  </style>
+<script>
+    const SIMPLIFIQUE_ANDROID = /SimplifiqueRotasAndroid\/1/.test(navigator.userAgent);
+    if (SIMPLIFIQUE_ANDROID) document.documentElement.classList.add('simplifique-android');
+  </script>
+<style id="simplifique-android-css">
+/* Apenas o aplicativo identificado pelo User-Agent; desktop preservado. */
+html.simplifique-android .login-tabs,html.simplifique-android #central-login{display:none!important}
+html.simplifique-android #driver-login:not([hidden]){display:block}
+html.simplifique-android .login-pane{padding:24px 18px;min-height:0}
+html.simplifique-android .login{min-height:100dvh;padding:16px 0}
+html.simplifique-android .login-shell{min-height:0}
+html.simplifique-android .login-pane>p{line-height:1.5}
+html.simplifique-android .btn,html.simplifique-android .input,html.simplifique-android .select{min-height:48px;font-size:16px}
+html.simplifique-android textarea{font:inherit}
+html.simplifique-android #driver-app{padding-top:0;min-height:100dvh}
+html.simplifique-android #driver-app .topbar{position:sticky;height:auto;min-height:72px;flex-wrap:wrap;padding:10px 12px;gap:8px;overflow:visible}
+html.simplifique-android #driver-app .topbar-left{flex:1 1 200px;gap:10px}
+html.simplifique-android #driver-app .topbar-right{margin-left:auto;gap:8px}
+html.simplifique-android #driver-app .app-title{min-width:0;overflow-wrap:anywhere}
+html.simplifique-android #driver-app .workspace.driver{width:100%!important;max-width:720px!important;margin:auto!important;padding:12px 12px 28px!important}
+html.simplifique-android #driver-app .driver-journey-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));overflow:visible;padding:2px}
+html.simplifique-android #driver-app .journey-chip{width:100%;min-width:0;max-width:none;min-height:64px;white-space:normal}
+html.simplifique-android #driver-app .delivery-title{flex-wrap:wrap;gap:8px}
+html.simplifique-android #driver-app .delivery-title>div{min-width:0;flex:1 1 170px}
+html.simplifique-android #driver-app .delivery-card,html.simplifique-android #driver-app .hero-status{overflow-wrap:anywhere}
+html.simplifique-android .badge,html.simplifique-android .order-tag{white-space:normal;overflow-wrap:anywhere}
+html.simplifique-android #driver-app .delivery-actions{grid-template-columns:minmax(0,1fr)}
+html.simplifique-android #driver-app .delivery-actions .btn{width:100%;font-size:16px;min-height:52px;text-align:center;white-space:normal}
+html.simplifique-android #driver-app summary{padding:12px 0;min-height:48px;font-size:14px}
+html.simplifique-android .driver-section-title{flex-wrap:wrap}
+html.simplifique-android #return-dialog,html.simplifique-android #pendency-dialog{width:calc(100% - 16px)!important;max-width:690px;max-height:calc(100dvh - 16px);margin:auto}
+html.simplifique-android #pendency-dialog .modal-body{max-height:calc(100dvh - 150px);padding:14px}
+html.simplifique-android #return-dialog .modal-body{padding:14px}
+html.simplifique-android .modal-head{padding:14px;gap:8px;align-items:flex-start}
+html.simplifique-android .modal-head>div{min-width:0;overflow-wrap:anywhere}
+html.simplifique-android .modal-head h2{font-size:19px}
+html.simplifique-android .modal-head>.btn{flex-shrink:0;padding:8px}
+html.simplifique-android #pendency-dialog .form-grid{grid-template-columns:minmax(0,1fr)}
+html.simplifique-android #pendency-dialog .form-grid>.field{grid-column:1/-1;min-width:0}
+html.simplifique-android #pendency-dialog input[type=file]{font-size:14px;max-width:100%;min-height:52px}
+html.simplifique-android #pendency-dialog .modal-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+html.simplifique-android .field label{font-size:13px}
+html.simplifique-android input,html.simplifique-android select,html.simplifique-android textarea{scroll-margin-block:90px}
+html.simplifique-android #loading{max-width:calc(100vw - 24px)}
+html.simplifique-android .loading-box{white-space:normal}
+</style>
+</head>
+<body>
+  <section id="login-view" class="login">
+    <div class="login-shell">
+      <main class="login-pane">
+        <div class="mobile-login-brand"><span class="logo-box"><img class="logo" data-logo alt="Simplifique"></span><strong>Rota Simples</strong></div>
+        <h2>Acessar sistema</h2>
+        <p>Escolha a visão adequada para continuar.</p>
+        <div class="login-tabs">
+          <button class="login-tab active" data-login-tab="central" type="button">Central</button>
+          <button class="login-tab" data-login-tab="motorista" type="button">Motorista</button>
+        </div>
+
+        <form id="central-login">
+          <div class="field"><label for="central-user">Usuário</label><input id="central-user" class="input" value="diego" autocomplete="username" required></div>
+          <div class="field"><label for="central-pass">Senha</label><input id="central-pass" class="input" type="password" inputmode="numeric" autocomplete="current-password" required></div>
+          <div id="central-login-error" class="error-box" hidden></div>
+          <button class="btn btn-primary btn-block" type="submit">Entrar na Central</button>
+        </form>
+
+        <form id="driver-login" hidden>
+          <div class="field"><label for="driver-vehicle">Veículo</label><select id="driver-vehicle" class="select" required><option value="">Selecione o veículo</option></select></div>
+          <div class="field"><label for="driver-pass">Senha do veículo</label><input id="driver-pass" class="input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="12" autocomplete="current-password" placeholder="Digite a senha" required></div>
+          <div id="driver-login-error" class="error-box" hidden></div>
+          <button id="driver-login-submit" class="btn btn-primary btn-block" type="submit">Entrar como Motorista</button>
+        </form>
+        <div class="login-note">Central: entre com usuário e senha. Motorista: selecione o veículo e informe a senha.</div>
+      </main>
+    </div>
+  </section>
+
+  <section id="central-app" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-left"><span class="logo-box"><img class="logo" data-logo alt="Simplifique"></span><div class="app-title"><strong>Rota Simples</strong><span>Central de Roteirização</span></div></div>
+      <div class="topbar-right"><span id="central-user-label" class="user-label small"></span><button class="btn" data-action="refresh-central"><span class="refresh-text">Atualizar</span> ↻</button><button class="btn" data-action="logout">Sair</button></div>
+    </header>
+    <div class="workspace">
+      <nav class="nav">
+        <button class="btn active" data-central-view="dashboard">Painel</button>
+        <button class="btn" data-central-view="routes">Rotas</button>
+        <button class="btn" data-central-view="import">Importar Excel</button>
+      </nav>
+
+      <section id="central-dashboard">
+        <div class="dashboard-head">
+          <div class="dashboard-title"><h1>Operação de entregas</h1><p id="central-updated">Atualizando dados...</p></div>
+          <div id="kpis" class="kpis"></div>
+          <div class="dashboard-tools"><div class="field"><label for="dashboard-date-filter">Data do painel</label><input id="dashboard-date-filter" class="input" type="date"></div><button id="dashboard-today" class="btn" type="button">Hoje</button></div>
+        </div>
+        <article class="card fleet-monitor-card"><div class="card-head"><div><h2>Monitoramento de rotas</h2><p>Acompanhe a etapa atual de cada jornada. Clique em uma rota para abrir os detalhes operacionais.</p></div><div class="mini-legend"><span><i class="legend-dot green"></i>Concluído</span><span><i class="legend-dot red"></i>Retorno</span><span><i class="legend-dot purple"></i>Atual</span><span><i class="legend-dot gray"></i>Pendente</span></div></div><div class="card-body"><div id="active-routes" class="vehicle-board"></div></div></article>
+      </section>
+
+      <section id="central-routes" hidden>
+        <div class="page-head"><div><h1>Rotas e carregamentos</h1><p>Revise os dados antes da liberação e acompanhe cada entrega.</p></div></div>
+        <article class="card"><div class="card-body">
+          <div class="filters">
+            <input id="route-search" class="input" type="search" placeholder="Veículo, motorista, carregamento, cliente ou pedido">
+            <select id="route-status-filter" class="select"><option value="">Todos os status</option></select>
+            <select id="route-vehicle-filter" class="select"><option value="">Todos os veículos</option></select>
+            <input id="route-date-filter" class="input" type="date">
+          </div>
+          <div class="bulk-actions"><strong id="bulk-count">0 selecionados</strong><span class="small muted">Clientes iguais no mesmo destino são consolidados automaticamente na jornada. A unificação manual continua disponível.</span><span class="spacer"></span><button id="bulk-release-open" class="btn btn-green" type="button" disabled>Editar e liberar selecionados</button><button id="merge-loads" class="btn btn-blue" type="button" disabled>Unificar em uma parada</button><button id="unmerge-loads" class="btn" type="button" disabled>Desunificar</button></div>
+          <div class="table-wrap"><table><thead><tr><th style="width:38px"><input id="route-select-all" class="route-select" type="checkbox" aria-label="Selecionar carregamentos visíveis"></th><th>Data</th><th>Veículo</th><th>Carregamento</th><th>Operação</th><th>Cliente</th><th>Motorista</th><th>Entregas</th><th>Pedidos</th><th>Status</th><th></th></tr></thead><tbody id="routes-body"></tbody></table></div>
+        </div></article>
+      </section>
+
+      <section id="central-import" hidden>
+        <div class="page-head"><div><h1>Importar base de entregas</h1><p>Arquivos .xls ou .xlsx. O conteúdo é lido no navegador e enviado para validação.</p></div></div>
+        <div class="import-grid">
+          <article class="card"><div class="card-body">
+            <div id="drop-zone" class="drop-zone">
+              <div style="font-size:34px">⇧</div><h3>Selecione a planilha</h3><p>Use o arquivo exportado com as colunas padrão da operação.</p>
+              <input id="excel-file" type="file" accept=".xls,.xlsx"><button id="choose-file" class="btn btn-blue" type="button">Escolher arquivo</button>
+              <div id="selected-file" class="small muted" style="margin-top:10px"></div>
+            </div>
+          </div></article>
+          <article class="card"><div class="card-head"><div><h2>Pré-validação</h2><p>Confira antes de gravar na planilha.</p></div></div><div class="card-body">
+            <div id="import-empty" class="empty">Selecione um arquivo para analisar.</div>
+            <div id="import-preview" hidden>
+              <div id="preview-stats" class="preview-stats"></div>
+              <div id="friday-options"></div>
+              <div id="invalid-rows" class="invalid-list"></div>
+              <button id="confirm-import" class="btn btn-primary btn-block" style="margin-top:14px" type="button">Confirmar importação</button>
+            </div>
+          </div></article>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="driver-app" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-left"><span class="logo-box"><img class="logo" data-logo alt="Simplifique"></span><div class="app-title"><strong>Rota Simples</strong><span>Motorista</span></div></div>
+      <div class="topbar-right"><span id="driver-vehicle-label" class="user-label small"></span><button class="btn" data-action="refresh-driver"><span class="refresh-text">Atualizar</span> ↻</button><button class="btn" data-action="logout">Sair</button></div>
+    </header>
+    <div class="workspace driver">
+      <div id="driver-route-tabs" class="driver-head"></div>
+      <div id="driver-content"></div>
+    </div>
+  </section>
+
+
+  <dialog id="bulk-route-dialog" style="width:min(900px,calc(100vw - 24px))">
+    <div class="modal-head"><div><h2>Liberar rotas em massa</h2><div id="bulk-route-sub" class="small muted">Aplique os dados operacionais aos carregamentos selecionados.</div></div><button class="btn" type="button" data-action="close-bulk-route-dialog">Fechar</button></div>
+    <div class="modal-body">
+      <form id="bulk-route-form">
+        <div class="alert alert-info" style="margin-top:0"><strong>Uma única jornada para o motorista.</strong><br>Os carregamentos continuam separados no histórico, mas serão exibidos juntos no celular quando terminarem com o mesmo veículo, data, turno e motorista. Campos vazios mantêm o valor atual de cada carregamento.</div>
+        <div id="bulk-route-selection" class="order-tags" style="margin:12px 0"></div>
+        <div class="form-grid">
+          <div class="field span-3"><label>Data operacional</label><input id="bulk-route-date" class="input" type="date"><span class="small muted">Vazio = manter atual.</span></div>
+          <div class="field span-3"><label>Turno</label><select id="bulk-route-turn" class="select"><option value="">Manter como está</option><option value="MANHA">Manhã</option><option value="TARDE">Tarde</option><option value="EXTRA">Extra</option></select></div>
+          <div class="field span-3"><label>Veículo</label><select id="bulk-route-vehicle" class="select"><option value="">Manter como está</option></select></div>
+          <div class="field span-3"><label>Motorista</label><input id="bulk-route-driver" class="input" placeholder="Vazio = manter atual"></div>
+          <div class="field span-4"><label>Tipo de operação</label><select id="bulk-route-operation" class="select"><option value="">Manter tipo atual</option><option value="ENTREGA_CLIENTE">Entrega cliente — CD → Cliente</option><option value="COLETA_LOJA_CD">Coleta — Loja → CD</option><option value="ENTREGA_LOJA">Entrega loja — CD → Loja</option></select></div>
+          <div id="bulk-route-store-field" class="field span-8" hidden><label>Loja da operação</label><input id="bulk-route-store" class="input" placeholder="Ex.: Loja Messejana"><span class="small muted">Aplicada em todos os carregamentos selecionados.</span></div>
+        </div>
+        <div id="bulk-route-warning" class="small muted" style="margin-top:12px"></div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-action="close-bulk-route-dialog">Cancelar</button>
+          <button id="bulk-release-confirm" class="btn btn-green" type="submit">Aplicar e liberar selecionados</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+<dialog id="avulsa-dialog"><div class="modal-head"><h2>Entrega avulsa (retorno)</h2><button id="close-avulsa" class="btn" type="button">Fechar</button></div><div class="modal-body"><form id="avulsa-form"><p>O pedido será incluído no carregamento aberto, com o mesmo veículo, data, turno e motorista. Cadastre um pedido por vez.</p><div class="form-grid"><div class="field span-6"><label for="av-pedido">Pedido</label><input class="input" id="av-pedido" name="pedido" maxlength="500" required></div><div class="field span-6"><label for="av-filial">Filial</label><input class="input" id="av-filial" name="filial" maxlength="500" required></div><div class="field span-6"><label for="av-codigoCliente">Código do cliente</label><input class="input" id="av-codigoCliente" name="codigoCliente" maxlength="500" ></div><div class="field span-6"><label for="av-cliente">Cliente</label><input class="input" id="av-cliente" name="cliente" maxlength="500" required></div><div class="field span-6"><label for="av-telefone">Telefone</label><input class="input" id="av-telefone" name="telefone" maxlength="500" required></div><div class="field span-6"><label for="av-endereco">Endereço completo (rua, número e complemento)</label><input class="input" id="av-endereco" name="endereco" maxlength="500" required></div><div class="field span-6"><label for="av-bairro">Bairro</label><input class="input" id="av-bairro" name="bairro" maxlength="500" required></div><div class="field span-6"><label for="av-cidade">Cidade</label><input class="input" id="av-cidade" name="cidade" maxlength="500" required></div><div class="field span-6"><label for="av-uf">UF</label><input class="input" id="av-uf" name="uf" maxlength="2" required></div><div class="field span-6"><label for="av-cep">CEP</label><input class="input" id="av-cep" name="cep" maxlength="500" ></div><div class="field span-6"><label for="av-motivo">Motivo / observação do retorno</label><input class="input" id="av-motivo" name="motivo" maxlength="500" required></div></div><div class="modal-actions"><button class="btn btn-green" type="submit">Adicionar entrega</button></div></form></div></dialog>
+  <dialog id="route-dialog">
+    <div class="modal-head"><div><h2 id="route-dialog-title">Revisar rota</h2><div id="route-dialog-sub" class="small muted"></div></div><button class="btn" data-action="close-route-dialog">Fechar</button></div>
+    <div class="modal-body">
+      <div id="route-alert"></div>
+      <form id="route-form">
+        <input id="route-id" type="hidden">
+        <div class="form-grid">
+          <div class="field span-3"><label>Data operacional</label><input id="route-date" class="input" type="date" required></div>
+          <div class="field span-3"><label>Turno</label><select id="route-turn" class="select"><option value="MANHA">Manhã</option><option value="TARDE">Tarde</option><option value="EXTRA">Extra</option></select></div>
+          <div class="field span-3"><label>Veículo</label><select id="route-vehicle" class="select" required></select></div>
+          <div class="field span-3"><label>Motorista</label><input id="route-driver" class="input" required></div>
+          <div class="field span-4"><label>Tipo de operação</label><select id="route-operation" class="select"><option value="ENTREGA_CLIENTE">Entrega cliente — CD → Cliente</option><option value="COLETA_LOJA_CD">Coleta — Loja → CD</option><option value="ENTREGA_LOJA">Entrega loja — CD → Loja</option></select></div>
+          <div id="route-store-field" class="field span-8" hidden><label>Loja da operação</label><input id="route-store" class="input" placeholder="Ex.: Loja Messejana, Loja Eusébio..."><span class="small muted">A operação será aplicada ao carregamento inteiro.</span></div>
+        </div>
+        <div id="route-operation-notice"></div>
+        <div style="margin-top:8px"><strong>Entregas / pedidos do carregamento</strong> <button id="add-avulsa" class="btn" type="button">+ Entrega avulsa (retorno)</button><div id="route-deliveries"></div></div>
+        <div class="modal-actions">
+          <button id="save-route" class="btn btn-blue" type="submit">Salvar revisão</button>
+          <button id="release-route" class="btn btn-green" type="button">Liberar rota</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+
+  <dialog id="journey-detail-dialog" class="journey-detail-dialog">
+    <div class="modal-head"><div><h2 id="journey-detail-title">Detalhes da jornada</h2><div id="journey-detail-sub" class="small muted"></div></div><button class="btn" type="button" data-action="close-journey-detail-dialog">Fechar</button></div>
+    <div id="journey-detail-body" class="modal-body"></div>
+  </dialog>
+
+  <dialog id="return-dialog" style="width:min(520px,calc(100vw - 24px))">
+    <div class="modal-head"><div><h2>Registrar retorno</h2><div class="small muted">Selecione o motivo. Não é necessário digitar texto.</div></div><button class="btn" data-action="close-return-dialog">Fechar</button></div>
+    <div class="modal-body">
+      <input id="return-delivery-id" type="hidden">
+      <div class="field"><label>Motivo do retorno</label><select id="return-reason" class="select"></select></div>
+      <button id="confirm-return" class="btn btn-danger btn-block big-btn" type="button">Confirmar retorno</button>
+    </div>
+  </dialog>
+
+
+  <dialog id="pendency-dialog" style="width:min(690px,calc(100vw - 24px))">
+    <div class="modal-head"><div><h2>Registrar pendência para o SAC</h2><div class="small muted">Registro enviado à mesma base de Pendências de Entrega.</div></div><button class="btn" type="button" id="pendency-close">Fechar</button></div>
+    <div class="modal-body">
+      <form id="pendency-form">
+        <div id="pendency-context" class="alert alert-info"></div>
+        <div class="field"><label>Pedido / NF vinculado à parada</label><select class="select" id="pendency-order" required></select></div>
+        <div class="field"><label>Motivo da pendência</label><select class="select" id="pendency-reason" required></select></div>
+        <div class="field"><label>Observação do motorista</label><textarea id="pendency-observation" class="input" rows="3" maxlength="1300" style="min-height:85px;resize:vertical" placeholder="Descreva o ocorrido..."></textarea></div>
+        <div class="alert alert-info" style="margin-top:12px">Cada material exige uma foto ou vídeo do material e uma <strong>foto do pedido</strong>, como no sistema original. Registrar pendência <strong>não altera</strong> o status da entrega.</div>
+        <div class="inline" style="justify-content:space-between;margin-top:17px"><strong>Materiais da pendência</strong><button class="btn" type="button" id="pendency-add">+ Material</button></div>
+        <div id="pendency-items"></div>
+        <div class="modal-actions" style="margin-top:18px"><button type="button" class="btn" id="pendency-cancel">Cancelar</button><button type="submit" class="btn btn-green" id="pendency-submit">Enviar pendência ao SAC</button></div>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="toast-stack" class="toast-stack"></div>
+  <dialog id="loading" class="loading-dialog"><div class="loading-box"><span class="spinner"></span><span id="loading-text">Carregando...</span></div></dialog>
+
+  <script>
+    'use strict';
+    const LOGO_DATA = 'data:image/png;base64,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FE571jfpi2J1bSPaGEb0XlRVAEBERtSFji+u+p0oXreN3m/EOsKZ1/zQ+/273uKqxQp8URQvww5M0b4Nn9J4CnZZ9a8itc1nj/QZtks2TJmrlhnn1LY8vNvXFk+uCudl24euZtstthvHzFcrMM2d33URAHi3jDtL1TyEwpnl7oXPb95+X3/D1GK1PPOuw4z0gTGh/H8kl02rVrWWaP+GU5H2IG4hEIwClo3dPj41QC4F9ToB4wOFVRsgVo1b27TbpCLRvqJLi6OecU4WqGNyeCp6xfoRVfRMNlR83kBuEaAC0JWq1o/ceS3DliweTYmGKbOMmuz2Hfb61xUh7z8u3Coq1zlX9d0MAKklVdON4iZVu+Zd9/3QB8aE8j4l7qg6yvJxhQJfVK/TRSYOGN31EwyGIW4J1Ao+L5pbHumqeIA73In2neTiin8yKktVrTMtW3pgzDKoud+Z13brvo7to4gJZYQ6bhybH43EjlHVw9WSGAQKhYhBGtB1iuzz3N1OtP9IL5t6RC6bPRZWICCqrzp1zbvNERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERER14/g8ao8CRjRmbcwAAAABJRU5ErkJggg==';
+    const state = {
+      token: sessionStorage.getItem('rota_simples_token') || '',
+      profile: sessionStorage.getItem('rota_simples_profile') || '',
+      data: null, vehiclesLogin: [], importRows: null, importFile: null, importPreview: null,
+      selectedRouteId: '', selectedJourneyId: '', selectedRouteIds: new Set(), timer: null, busy: false, actionButton: null, actionButtonHtml: '', dashboardDate: sessionStorage.getItem('rota_simples_dashboard_date') || ''
+    };
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const norm = v => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase();
+    const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    const routeLabels = {
+      AGUARDANDO_LIBERACAO:'Aguardando liberação',LIBERADA:'Rota liberada',SAINDO_CD:'Saindo do CD',
+      EM_ROTA:'Em rota',VOLTANDO_CD:'Voltando para o CD',CHEGADA_CD:'Chegada ao CD'
+    };
+    const deliveryLabels = {PENDENTE:'Pendente',A_CAMINHO:'A caminho do cliente',NO_CLIENTE:'No cliente',ENTREGA_REALIZADA:'Entrega realizada',RETORNO_REGISTRADO:'Retorno registrado'};
+
+    function rpc(name,...args){
+      return new Promise((resolve,reject)=>{
+        const r=google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e&&e.message?e.message:String(e))));
+        r[name](...args);
+      });
+    }
+    function setLoading(on,text='Carregando...',button=null){
+      const dlg=$('#loading');
+      if(on){
+        state.busy=true;$('#loading-text').textContent=text;
+        if(button&&!state.actionButton){state.actionButton=button;state.actionButtonHtml=button.innerHTML;button.disabled=true;button.classList.add('action-busy')}
+        if(dlg&&!dlg.open){try{dlg.showModal()}catch(_){dlg.setAttribute('open','')}}
+      }else{
+        if(dlg&&dlg.open){try{dlg.close()}catch(_){dlg.removeAttribute('open')}}
+        if(state.actionButton){state.actionButton.disabled=false;state.actionButton.classList.remove('action-busy');state.actionButton.innerHTML=state.actionButtonHtml;state.actionButton=null;state.actionButtonHtml=''}
+        state.busy=false
+      }
+    }
+    function beginAction(button,text){if(state.busy)return false;setLoading(true,text,button);return true}
+    function toast(msg,type='info',title){
+      const el=document.createElement('div');el.className='toast '+type;
+      el.innerHTML=`<strong>${esc(title|| (type==='error'?'Atenção':type==='success'?'Tudo certo':'Informação'))}</strong><span>${esc(msg)}</span>`;
+      $('#toast-stack').appendChild(el);setTimeout(()=>el.remove(),type==='error'?7000:4500);
+    }
+    function err(e){const m=String(e&&e.message?e.message:e).replace(/^Exception:\s*/,'');if(/sess[aã]o expirada/i.test(m)){logoutLocal();showLogin();toast('Sua sessão expirou. Entre novamente.','error');return}toast(m,'error')}
+    function statusBadge(status){
+      const s=norm(status);let cls='s-release';
+      if(s==='AGUARDANDO_LIBERACAO'||s==='PENDENTE')cls='s-wait';
+      else if(s==='A_CAMINHO'||s==='NO_CLIENTE')cls='s-client';
+      else if(s==='RETORNO_REGISTRADO')cls='s-return';
+      else if(s==='ENTREGA_REALIZADA'||s==='CHEGADA_CD')cls='s-done';
+      else if(['SAINDO_CD','EM_ROTA','VOLTANDO_CD'].includes(s))cls='s-route';
+      return `<span class="badge ${cls}">${esc(routeLabels[s]||deliveryLabels[s]||s.replace(/_/g,' '))}</span>`;
+    }
+    function fmtDate(v){if(!v)return'-';const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}/${m[1]}`:v}
+    function fmtDateTime(v){if(!v)return'-';const p=String(v).split(' ');return `${fmtDate(p[0])}${p[1]?' '+p[1]:''}`}
+    function vehicleLabel(nome,placa){
+      const text=String(nome||'').trim(), compact=norm(text).replace(/[^A-Z0-9]/g,'');
+      const plate=(String(placa||'').trim() || (compact.match(/[A-Z]{3}[0-9][A-Z0-9][0-9]{2}/)||[])[0] || '').toUpperCase();
+      const number=((norm(text).match(/\bCARRO\s*0*(\d{1,5})\b/)||compact.match(/^0*(\d{1,5})(?=[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$)/)||[])[1]||'').replace(/^0+/,'');
+      const base=number?'CARRO '+number:(text||'VEÍCULO').toUpperCase();
+      return plate?`${base} (${plate})`:base
+    }
+    function todayIso(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+    function serverToday(){const m=String(state.data?.atualizacao||'').match(/^(\d{4}-\d{2}-\d{2})/);return m?m[1]:todayIso()}
+    function logoutLocal(){state.token='';state.profile='';state.data=null;sessionStorage.removeItem('rota_simples_token');sessionStorage.removeItem('rota_simples_profile');if(state.timer)clearInterval(state.timer);state.timer=null}
+    function setSession(res){state.token=res.token;state.profile=res.perfil;state.data=res.data;sessionStorage.setItem('rota_simples_token',res.token);sessionStorage.setItem('rota_simples_profile',res.perfil)}
+    function unique(a){return [...new Set((a||[]).filter(v=>v!==''&&v!=null))]}
+    function clientStopStatus(es){const sts=(es||[]).map(e=>norm(e.status));if(!sts.length)return'PENDENTE';if(sts.includes('NO_CLIENTE'))return'NO_CLIENTE';if(sts.includes('A_CAMINHO'))return'A_CAMINHO';if(sts.every(s=>s==='ENTREGA_REALIZADA'))return'ENTREGA_REALIZADA';if(sts.every(s=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(s)))return sts.includes('RETORNO_REGISTRADO')?'RETORNO_REGISTRADO':'ENTREGA_REALIZADA';return'PENDENTE'}
+    function clientStoreKey(v){return norm(v).replace(/^SIMPLIFIQUE HOME CENTER\s+/,'').replace(/^LOJA\s+/,'').replace(/[^A-Z0-9]/g,'')}
+    function clientStop(id,type,title,rs,es,order,override={}){const f=es[0]||{},times=field=>(es||[]).map(e=>String(e?.[field]||'').trim()).filter(Boolean).sort(),arrive=times('chegadaClienteEm'),finish=times('finalizadaEm'),ret=times('retornoRegistradoEm');return{id,tipoOperacao:type,titulo:override.titulo??title,cliente:override.cliente??f.cliente,codigoCliente:override.codigoCliente??f.codigoCliente,endereco:override.endereco??f.endereco,enderecoMapa:override.enderecoMapa??f.enderecoMapa,telefone:override.telefone??f.telefone,carregamentos:unique(rs.map(r=>r.carregamento)),rotaIds:rs.map(r=>r.id),entregaIds:es.map(e=>e.id),pedidos:unique(es.flatMap(e=>e.pedidos||[])),pedidosAntigos:unique(es.flatMap(e=>e.pedidosAntigos||[])),status:clientStopStatus(es),motivoRetorno:unique(es.map(e=>e.motivoRetorno).filter(Boolean)).join(' / '),selecionadaEm:times('selecionadaEm')[0]||'',chegadaEm:arrive[0]||'',concluidaEm:finish.at(-1)||'',retornoEm:ret.at(-1)||'',ordem:order}}
+    function clientStops(rs){
+      const out=[],groups=new Map();
+      rs.forEach((r,ri)=>{const type=norm(r.tipoOperacao)||'ENTREGA_CLIENTE';(r.entregas||[]).forEach((e,ei)=>{const order=ri*1000+(Number(e.ordem)||ei+1),key=type==='ENTREGA_CLIENTE'?clientDestinationKey(e):type+'|'+clientStoreKey(r.lojaOperacao||'Loja não informada');if(!key){out.push(clientStop('E:'+e.id,type,e.cliente,[r],[e],order));return}if(!groups.has(key))groups.set(key,{key,type,rs:[],es:[],order});const g=groups.get(key);if(!g.rs.some(x=>x.id===r.id))g.rs.push(r);g.es.push(e);g.order=Math.min(g.order,order)})});
+      groups.forEach(g=>{const r=g.rs[0],e=g.es[0],store=r.lojaOperacao||'Loja não informada';if(g.type==='ENTREGA_CLIENTE')out.push(clientStop(g.es.length===1?'E:'+e.id:['C',r.dataOperacional,norm(r.turno||'MANHA'),encodeURIComponent(g.key)].join('|'),g.type,e.cliente,g.rs,g.es,g.order));else out.push(clientStop('S:'+g.type+':'+norm(store),g.type,store,g.rs,g.es,g.order,{titulo:store,cliente:'',codigoCliente:'',endereco:store,enderecoMapa:store,telefone:''}))});
+      return out.sort((a,b)=>a.ordem-b.ordem).map((p,i)=>({...p,ordem:i+1}))
+    }
+    function clientJourneyStatus(rs){const s=rs.map(r=>norm(r.status));if(s.length&&s.every(x=>x==='CHEGADA_CD'))return'CHEGADA_CD';if(s.includes('VOLTANDO_CD'))return'VOLTANDO_CD';if(s.includes('EM_ROTA'))return'EM_ROTA';if(s.includes('SAINDO_CD'))return'SAINDO_CD';return'LIBERADA'}
+    function clientJourneyConfirm(rs){const v=rs.map(r=>norm(r.motoristaConfirmado));return v.includes('DIVERGENTE')?'DIVERGENTE':v.length&&v.every(x=>x==='SIM')?'SIM':'PENDENTE'}
+    function rebuildCentralJourneys(){if(!state.data)return;const allowed=['LIBERADA','SAINDO_CD','EM_ROTA','VOLTANDO_CD','CHEGADA_CD'],groups=new Map();(state.data.rotas||[]).forEach(r=>{if(!allowed.includes(norm(r.status)))return;const key=`${r.dataOperacional}|${norm(vehicleLabel(r.veiculo,r.placa))}|${norm(r.turno||'MANHA')}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r)});state.data.jornadas=[...groups.entries()].map(([key,rs])=>{rs=rs.slice().sort((a,b)=>String(a.carregamento).localeCompare(String(b.carregamento),'pt-BR',{numeric:true}));const f=rs[0],drivers=unique(rs.map(r=>r.motorista).filter(Boolean)),times=field=>rs.map(r=>String(r?.[field]||'').trim()).filter(Boolean).sort(),lib=times('liberadaEm'),out=times('saidaEm'),back=times('retornoCdEm'),end=times('finalizadaEm');return{id:'J|'+key,dataOperacional:f.dataOperacional,veiculo:f.veiculo,placa:f.placa,motorista:drivers.join(' / '),turno:f.turno,motoristasDiferentes:drivers.length>1,motoristaConfirmado:clientJourneyConfirm(rs),status:clientJourneyStatus(rs),liberadaEm:lib[0]||'',saidaEm:out[0]||'',retornoCdEm:back.at(-1)||'',finalizadaEm:end.at(-1)||'',rotaIds:rs.map(r=>r.id),carregamentos:rs.map(r=>r.carregamento),paradas:clientStops(rs)}}).sort((a,b)=>a.dataOperacional.localeCompare(b.dataOperacional)||vehicleLabel(a.veiculo,a.placa).localeCompare(vehicleLabel(b.veiculo,b.placa),'pt-BR',{numeric:true}))}
+    function applyCentralResult(res,render=true){if(res?.data)state.data=res.data;else if(res){const map=new Map((state.data?.rotas||[]).map(r=>[r.id,r]));(res.rotasAtualizadas||[]).forEach(r=>map.set(r.id,r));state.data.rotas=[...map.values()];if(res.atualizacao)state.data.atualizacao=res.atualizacao;if(res.eventCursor!=null)state.data.eventCursor=res.eventCursor;rebuildCentralJourneys()}if(render)renderCentral()}
+    function applyDriverResult(res,render=true){if(res?.data)state.data=res.data;else if(res){if(res.atualizacao)state.data.atualizacao=res.atualizacao;if(res.eventCursor!=null)state.data.eventCursor=res.eventCursor;if(res.jornadaRemovida){state.data.jornadas=(state.data.jornadas||[]).filter(j=>!(j.dataOperacional===res.jornadaRemovida.dataOperacional&&norm(j.turno)===norm(res.jornadaRemovida.turno)));if(state.selectedJourneyId&&!state.data.jornadas.some(j=>j.id===state.selectedJourneyId))state.selectedJourneyId=''}if(res.jornadaAtualizada){const js=(state.data.jornadas||[]).filter(j=>j.id!==res.jornadaAtualizada.id);js.push(res.jornadaAtualizada);state.data.jornadas=js.sort((a,b)=>a.dataOperacional.localeCompare(b.dataOperacional)||String(a.turno).localeCompare(String(b.turno)))}}if(render)renderDriver()}
+    async function pulseCentral(){if(state.busy||state.profile!=='ROTEIRIZADOR'||!state.data)return;try{const res=await rpc('obterPulsoCentral',state.token,state.data.eventCursor||1);if(res.eventCursor!=null)state.data.eventCursor=res.eventCursor;if(!res.changed){renderActiveRoutes();return}applyCentralResult(res,true)}catch(_){}}
+    async function pulseDriver(){if(state.busy||state.profile!=='MOTORISTA'||!state.data)return;try{const res=await rpc('obterPulsoMotorista',state.token,state.data.eventCursor||1);if(res.eventCursor!=null)state.data.eventCursor=res.eventCursor;if(!res.changed)return;applyDriverResult(res,true)}catch(_){}}
+    function showLogin(){$('#login-view').hidden=false;$('#central-app').hidden=true;$('#driver-app').hidden=true}
+    function showProfile(){ $('#login-view').hidden=true; const central=state.profile==='ROTEIRIZADOR';$('#central-app').hidden=!central;$('#driver-app').hidden=central; central?renderCentral():renderDriver(); scheduleRefresh() }
+    function scheduleRefresh(){if(state.timer)clearInterval(state.timer);state.timer=setInterval(()=>state.profile==='ROTEIRIZADOR'?pulseCentral():pulseDriver(),15000)}
+
+    async function boot(){
+      $$('[data-logo]').forEach(i=>i.src=LOGO_DATA);
+      bind();
+      if(SIMPLIFIQUE_ANDROID){
+        switchLogin('motorista');
+        $('#login-view h2').textContent='Simplifique Rotas';
+        $('#login-view .login-pane>p').textContent='Selecione o veículo e entre com sua senha.';
+        $('#login-view .login-note').textContent='Simplifique Home Center • Acesso do motorista';
+      }
+      await loadVehiclesLogin();
+      if(!state.token){showLogin();switchLogin(window.matchMedia('(max-width:760px)').matches?'motorista':'central');return}
+      setLoading(true,'Restaurando sessão...');
+      try{const res=await rpc('restaurarSessao',state.token);setSession(res);showProfile()}catch(e){logoutLocal();showLogin()}finally{setLoading(false)}
+    }
+    async function loadVehiclesLogin(){
+      try{state.vehiclesLogin=await rpc('listarVeiculosLogin');$('#driver-vehicle').innerHTML='<option value="">Selecione o veículo</option>'+state.vehiclesLogin.map(v=>{const label=v.label||vehicleLabel(v.nome,v.placa);return `<option value="${esc(label)}">${esc(label)}</option>`}).join('')}catch(e){}
+    }
+    function switchLogin(tab){
+      if(SIMPLIFIQUE_ANDROID) tab='motorista';
+      $$('[data-login-tab]').forEach(b=>b.classList.toggle('active',b.dataset.loginTab===tab));
+      $('#central-login').hidden=tab!=='central';$('#driver-login').hidden=tab!=='motorista'
+    }
+    async function loginCentral(ev){
+      ev.preventDefault();$('#central-login-error').hidden=true;if(!beginAction(ev.submitter,'Validando acesso...'))return;
+      try{const res=await rpc('loginCentral',$('#central-user').value,$('#central-pass').value);setSession(res);$('#central-pass').value='';showProfile()}
+      catch(e){$('#central-login-error').textContent=e.message.replace(/^Exception:\s*/,'');$('#central-login-error').hidden=false}
+      finally{setLoading(false)}
+    }
+    async function loginDriver(ev){
+      ev.preventDefault();$('#driver-login-error').hidden=true;if(!$('#driver-vehicle').value){$('#driver-login-error').textContent='Selecione o veículo.';$('#driver-login-error').hidden=false;return}if(!$('#driver-pass').value){$('#driver-login-error').textContent='Digite a senha do veículo.';$('#driver-login-error').hidden=false;return}if(!beginAction(ev.submitter,'Validando veículo...'))return;
+      try{const res=await rpc('loginMotorista',$('#driver-vehicle').value,$('#driver-pass').value);setSession(res);$('#driver-pass').value='';state.selectedRouteId='';showProfile()}
+      catch(e){$('#driver-login-error').textContent=e.message.replace(/^Exception:\s*/,'');$('#driver-login-error').hidden=false}
+      finally{setLoading(false)}
+    }
+    async function logout(){
+      const t=state.token;logoutLocal();showLogin();if(t){try{await rpc('logout',t)}catch(e){}}
+    }
+
+    function renderCentral(){
+      $('#central-user-label').textContent=state.data?.usuario?.nome||'Central';
+      $('#central-updated').textContent='Atualizado em '+(state.data?.atualizacao?fmtDateTime(state.data.atualizacao):'agora');
+      const df=$('#dashboard-date-filter');if(df&&!df.value){df.value=state.dashboardDate||serverToday();state.dashboardDate=df.value}
+      renderKpis();renderActiveRoutes();renderRoutesFilters();renderRoutesTable()
+    }
+    function dashboardJourneys(){const date=$('#dashboard-date-filter')?.value||state.dashboardDate||serverToday();return (state.data?.jornadas||[]).filter(j=>j.dataOperacional===date)}
+    function renderKpis(){
+      const journeys=dashboardJourneys(),stops=journeys.flatMap(j=>j.paradas||[]),exec=['SAINDO_CD','EM_ROTA','VOLTANDO_CD'];
+      const items=[['Liberadas',journeys.length],['Em execução',journeys.filter(j=>exec.includes(norm(j.status))).length],['Pendentes',stops.filter(p=>!['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))).length],['Retornos',stops.filter(p=>norm(p.status)==='RETORNO_REGISTRADO').length],['Veículos',new Set(journeys.map(j=>norm(vehicleLabel(j.veiculo,j.placa)))).size]];
+      $('#kpis').innerHTML=items.map(x=>`<div class="kpi"><span>${esc(x[0])}</span><strong>${esc(x[1])}</strong></div>`).join('')
+    }
+    function renderActiveRoutes(){const journeys=dashboardJourneys(),groups=new Map();journeys.forEach(j=>{const k=norm(vehicleLabel(j.veiculo,j.placa));if(!groups.has(k))groups.set(k,[]);groups.get(k).push(j)});const cards=[...groups.values()].sort((a,b)=>vehicleLabel(a[0].veiculo,a[0].placa).localeCompare(vehicleLabel(b[0].veiculo,b[0].placa),'pt-BR',{numeric:true})).map(vehicleJourneyBoardCard).join('');$('#active-routes').innerHTML=cards||'<div class="empty">Nenhuma jornada liberada para a data selecionada. As rotas aguardando conferência permanecem na aba Rotas.</div>'}
+    function stopTimelineState(p){const s=norm(p.status);return s==='ENTREGA_REALIZADA'?'done':s==='RETORNO_REGISTRADO'?'return':['A_CAMINHO','NO_CLIENTE'].includes(s)?'active':'wait'}
+
+    function stopChosen(p){return norm(p.status)!=='PENDENTE'}
+    function executionStops(j){
+      const stamp=p=>p.selecionadaEm||p.chegadaEm||p.concluidaEm||p.retornoEm||'';
+      return (j.paradas||[]).map((p,i)=>({...p,baseIndex:i})).sort((a,b)=>{
+        const chosen=Number(stopChosen(b))-Number(stopChosen(a));if(chosen)return chosen;
+        if(!stopChosen(a))return a.baseIndex-b.baseIndex;
+        const ta=stamp(a),tb=stamp(b);if(ta&&tb)return ta.localeCompare(tb)||a.baseIndex-b.baseIndex;
+        const active=p=>['A_CAMINHO','NO_CLIENTE'].includes(norm(p.status));
+        return Number(active(a))-Number(active(b))||a.baseIndex-b.baseIndex
+      })
+    }
+    function driverStops(j){return executionStops(j).map((p,i)=>({...p,executionIndex:i})).sort((a,b)=>{const rank=p=>['A_CAMINHO','NO_CLIENTE'].includes(norm(p.status))?0:norm(p.status)==='PENDENTE'?1:2;return rank(a)-rank(b)||a.executionIndex-b.executionIndex})}
+    function journeyContact(j){const p=(j.paradas||[]).find(p=>['A_CAMINHO','NO_CLIENTE'].includes(norm(p.status)));return p?`<small>${esc(p.endereco||'Endereço não informado')} · Tel.: ${esc(p.telefone||'Não informado')}</small>`:''}
+    function idleMinutes(j){
+      if(!['EM_ROTA','VOLTANDO_CD'].includes(norm(j.status)))return null;
+      const times=(state.data?.rotas||[]).filter(r=>j.rotaIds.includes(r.id)).map(r=>r.monitorEm||r.saidaEm).filter(Boolean).sort(),stamp=times.at(-1);
+      if(!stamp)return null;
+      const start=Date.parse(stamp.replace(' ','T')+'-03:00');return Number.isFinite(start)?Math.max(0,Math.floor((Date.now()-start)/60000)):null
+    }
+    function idleBadge(j){const minutes=idleMinutes(j);return minutes===null?'':`<span class="attention-tag ${minutes>=40?'danger':'info'}" role="status">${minutes>=40?'⚠ Atenção · ':''}${minutes} min na etapa${minutes>=40?' · limite 40 min':''}</span>`}
+    function vehicleIndicator(js){
+      if(js.some(j=>idleMinutes(j)>=40))return{color:'#ce3e3e',label:'Alerta: 40 minutos ou mais na etapa',symbol:'!',alert:true};
+      if(js.some(j=>norm(j.motoristaConfirmado)==='DIVERGENTE'))return{color:'#ce3e3e',label:'Motorista divergente',symbol:'!',alert:true};
+      const moving=js.filter(j=>['EM_ROTA','VOLTANDO_CD'].includes(norm(j.status))),active=moving.flatMap(j=>j.paradas||[]).find(p=>['A_CAMINHO','NO_CLIENTE'].includes(norm(p.status)));
+      if(active)return{color:'#6d4bb8',label:norm(active.status)==='NO_CLIENTE'?'No cliente':'A caminho do cliente',symbol:norm(active.status)==='NO_CLIENTE'?'●':'→'};
+      if(moving.some(j=>norm(j.status)==='VOLTANDO_CD'))return{color:'#168653',label:'Voltando ao CD',symbol:'↩'};
+      if(moving.length)return{color:'#168653',label:'Em rota',symbol:'→'};
+      if(js.every(j=>norm(j.status)==='CHEGADA_CD'))return{color:'#14714a',label:'Jornada concluída',symbol:'✓'};
+      if(js.some(j=>norm(j.status)==='SAINDO_CD'))return{color:'#168653',label:'Saída do CD: aguardando início',symbol:'→'};
+      return{color:'#245b94',label:'Aguardando saída',symbol:'◷'}
+    }
+    async function persistOpenReview(){const r=(state.data.rotas||[]).find(r=>r.id===$('#route-id').value);if(r&&['AGUARDANDO_LIBERACAO','LIBERADA'].includes(norm(r.status))){if(!$('#route-form').reportValidity())throw new Error('Confira os campos da rota.');applyCentralResult(await rpc('salvarRevisaoRota',state.token,routeFormPayload()),false)}}
+    function openAvulsa(){$('#avulsa-form').reset();$('#avulsa-dialog').showModal()}
+    async function saveAvulsa(ev){ev.preventDefault();if(!beginAction(ev.submitter,'Adicionando entrega avulsa...'))return;try{await persistOpenReview();const payload=Object.fromEntries(new FormData($('#avulsa-form')));payload.rotaId=$('#route-id').value;applyCentralResult(await rpc('adicionarEntregaAvulsa',state.token,payload));$('#avulsa-dialog').close();openRoute(payload.rotaId);toast('Entrega avulsa adicionada.','success')}catch(e){err(e)}finally{setLoading(false)}}
+    async function deleteOrder(button){const pedido=button.dataset.deleteOrder,motivo=prompt(`Excluir o pedido ${pedido} da rota? Informe o motivo. O histórico será preservado.`);if(motivo===null)return;if(!motivo.trim()){toast('Informe o motivo da exclusão.','error');return}if(!beginAction(button,'Excluindo pedido...'))return;try{await persistOpenReview();const id=$('#route-id').value;applyCentralResult(await rpc('excluirPedidoRota',state.token,button.dataset.deleteDelivery,pedido,motivo));openRoute(id);toast('Pedido retirado da rota e registrado no histórico.','success')}catch(e){err(e)}finally{setLoading(false)}}
+
+    function journeyStageInfo(j){
+      const s=norm(j.status),stops=j.paradas||[],active=stops.find(p=>['A_CAMINHO','NO_CLIENTE'].includes(norm(p.status))),next=stops.find(p=>norm(p.status)==='PENDENTE');
+      if(s==='LIBERADA')return{title:'Aguardando saída',detail:'Liberada pela Central e aguardando confirmação/início do motorista.'};
+      if(s==='SAINDO_CD')return{title:'Saída do CD',detail:'Motorista confirmado. Jornada pronta para iniciar.'};
+      if(s==='EM_ROTA'&&active)return{title:deliveryLabels[norm(active.status)]||'Em atendimento',detail:active.titulo||'Parada atual'};
+      if(s==='EM_ROTA'&&next)return{title:'Em rota',detail:'Aguardando o motorista escolher o próximo cliente.'};
+      if(s==='EM_ROTA')return{title:'Paradas concluídas',detail:'Aguardando retorno ao CD.'};
+      if(s==='VOLTANDO_CD')return{title:'Voltando para o CD',detail:'Todas as paradas foram finalizadas.'};
+      if(s==='CHEGADA_CD')return{title:'Jornada concluída',detail:'Chegada ao CD registrada.'};
+      return{title:routeLabels[s]||s,detail:''}
+    }
+    function journeyLane(j){
+      const stops=executionStops(j),done=stops.filter(p=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))).length,ret=stops.filter(p=>norm(p.status)==='RETORNO_REGISTRADO').length,stage=journeyStageInfo(j);
+      const pieces=[{state:['SAINDO_CD','EM_ROTA','VOLTANDO_CD','CHEGADA_CD'].includes(norm(j.status))?'done':norm(j.status)==='LIBERADA'?'wait':'active',label:'CD',title:'Saída do CD'},...stops.map((p,i)=>({state:stopTimelineState(p),label:String(i+1),title:stopChosen(p)?`${i+1}. ${p.titulo} • ${operationLabel(p.tipoOperacao,'')}`:`${i+1}. A definir pelo motorista`})),{state:norm(j.status)==='VOLTANDO_CD'?'active':norm(j.status)==='CHEGADA_CD'?'done':'wait',label:'↩',title:'Voltando ao CD'},{state:norm(j.status)==='CHEGADA_CD'?'done':'wait',label:'CD',title:'Chegada ao CD'}];
+      const progress=pieces.map((x,i)=>`${i?`<span class="journey-link ${['done','return'].includes(pieces[i-1].state)?'done':pieces[i-1].state==='active'?'active':''}"></span>`:''}<span class="journey-node ${x.state}" title="${esc(x.title)}">${esc(x.label)}</span>`).join('');
+      return `<div class="vehicle-journey-lane route-monitor-row" data-open-journey="${esc(j.id)}" role="button" tabindex="0">
+        <div class="monitor-route-meta"><div class="monitor-route-top"><strong>${esc(turnLabel(j.turno))}</strong>${statusBadge(j.status)}</div><span>${j.carregamentos.length} carregamento${j.carregamentos.length>1?'s':''} · ${done}/${stops.length} paradas${ret?' · '+ret+' retorno'+(ret>1?'s':''):''}</span></div>
+        <div class="monitor-route-progress"><div class="journey-progress">${progress}</div><div class="journey-summary">${stops.map((p,i)=>stopChosen(p)?`<span class="order-tag">${i+1} · ${esc(p.titulo||'-')}</span>`:'').join('')}</div></div>
+        <div class="monitor-current"><span>Etapa atual</span><strong>${esc(stage.title)}</strong><small>${esc(stage.detail)}</small>${journeyContact(j)}${idleBadge(j)}<button class="btn monitor-detail-btn" type="button" data-open-journey="${esc(j.id)}">Ver detalhes</button></div>
+      </div>`
+    }
+    function vehicleJourneyBoardCard(js){
+      js=js.slice().sort((a,b)=>String(a.turno).localeCompare(String(b.turno)));const first=js[0],stops=js.flatMap(j=>j.paradas||[]),done=stops.filter(p=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))).length,loads=js.reduce((n,j)=>n+j.carregamentos.length,0),drivers=[...new Set(js.map(j=>j.motorista).filter(Boolean))].join(' / '),live=js.some(j=>['SAINDO_CD','EM_ROTA','VOLTANDO_CD'].includes(norm(j.status))),indicator=vehicleIndicator(js);
+      return `<div class="journey-card ${live?'is-live':''}"><div class="journey-head"><div class="monitor-vehicle"><span class="monitor-vehicle-icon ${indicator.alert?'status-alert':''}" style="background:${indicator.color}" role="img" aria-label="${esc(indicator.label)}" title="${esc(indicator.label)}">${indicator.symbol}</span><div><strong>${esc(vehicleLabel(first.veiculo,first.placa))}</strong><span>${esc(drivers||'Motorista não definido')} · ${loads} carregamento${loads>1?'s':''}</span></div></div><div class="journey-count"><strong>${done}/${stops.length}</strong>paradas concluídas</div></div><div class="vehicle-journey-lanes">${js.map(journeyLane).join('')}</div></div>`
+    }
+    function centralStopStageLabel(p){
+      const s=norm(p.status),type=norm(p.tipoOperacao);if(s==='PENDENTE')return'Pendente';if(s==='A_CAMINHO')return type==='COLETA_LOJA_CD'?'A caminho da coleta':type==='ENTREGA_LOJA'?'A caminho da loja':'A caminho do cliente';if(s==='NO_CLIENTE')return type==='ENTREGA_CLIENTE'?'No cliente':'Na loja';if(s==='RETORNO_REGISTRADO')return'Retorno registrado';if(s==='ENTREGA_REALIZADA')return type==='COLETA_LOJA_CD'?'Coletado':type==='ENTREGA_LOJA'?'Entregue na loja':'Entrega realizada';return deliveryLabels[s]||s
+    }
+    function openJourneyDetails(id){
+      const j=(state.data?.jornadas||[]).find(x=>x.id===id);if(!j)return;const stops=executionStops(j),done=stops.filter(p=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))).length,stage=journeyStageInfo(j),ret=stops.filter(p=>norm(p.status)==='RETORNO_REGISTRADO').length;
+      $('#journey-detail-title').textContent=vehicleLabel(j.veiculo,j.placa);$('#journey-detail-sub').textContent=`${fmtDate(j.dataOperacional)} · ${turnLabel(j.turno)} · ${j.carregamentos.length} carregamento${j.carregamentos.length>1?'s':''}`;
+      const times=[['Liberada',j.liberadaEm],['Saída do CD',j.saidaEm],['Retorno ao CD',j.retornoCdEm],['Encerrada',j.finalizadaEm]].filter(x=>x[1]).map(x=>`<div class="detail-time"><span>${esc(x[0])}</span><strong>${esc(fmtDateTime(x[1]))}</strong></div>`).join('');
+      $('#journey-detail-body').innerHTML=`<div class="journey-detail-hero"><div><span class="detail-eyebrow">ETAPA ATUAL</span><h3>${esc(stage.title)}</h3><p>${esc(stage.detail)}</p>${idleBadge(j)}</div>${statusBadge(j.status)}</div>
+        <div class="journey-detail-metrics"><div><span>Motorista</span><strong>${esc(j.motorista||'-')}</strong></div><div><span>Progresso</span><strong>${done}/${stops.length} paradas</strong></div><div><span>Retornos</span><strong>${ret}</strong></div><div><span>Carregamentos</span><strong>${j.carregamentos.length}</strong></div></div>
+        ${times?`<div class="detail-times">${times}</div>`:''}
+        <div class="detail-stop-list">${stops.map((p,i)=>`<div class="detail-stop ${stopTimelineState(p)}"><div class="detail-stop-index">${i+1}</div><div class="detail-stop-main"><div class="detail-stop-head"><div><strong>${esc(p.titulo||'-')}</strong><span>${esc(operationLabel(p.tipoOperacao,''))}</span></div>${stopStatusBadge(p)}</div><div class="detail-stop-info"><span>Carregamento${p.carregamentos.length>1?'s':''}: <strong>${esc(p.carregamentos.join(', '))}</strong></span><span>Pedidos: <strong>${p.pedidos.length}</strong></span>${p.endereco?`<span>Destino: <strong>${esc(p.endereco)}</strong></span>`:''}<span>Telefone: <strong>${esc(p.telefone||'Não informado')}</strong></span>${p.rotaIds.map(id=>`<button type="button" class="btn" data-manage-load="${esc(id)}">Gerenciar pedidos · ${esc((state.data.rotas||[]).find(r=>r.id===id)?.carregamento||'')}</button>`).join('')}</div>${p.motivoRetorno?`<div class="alert alert-danger detail-return">Motivo do retorno: ${esc(p.motivoRetorno)}</div>`:''}<div class="detail-stop-times">${p.chegadaEm?`<span>Chegada: ${esc(fmtDateTime(p.chegadaEm))}</span>`:''}${p.concluidaEm?`<span>Conclusão: ${esc(fmtDateTime(p.concluidaEm))}</span>`:''}${p.retornoEm?`<span>Retorno: ${esc(fmtDateTime(p.retornoEm))}</span>`:''}</div></div></div>`).join('')}</div>`;
+      $('#journey-detail-dialog').showModal()
+    }
+    function routeTone(r){
+      if(norm(r.motoristaConfirmado)==='DIVERGENTE')return'route-alert';
+      const s=norm(r.status);if(s==='AGUARDANDO_LIBERACAO')return'route-wait';if(s==='LIBERADA')return'route-release';if(['SAINDO_CD','EM_ROTA'].includes(s))return'route-moving';if(s==='VOLTANDO_CD')return'route-returning';if(s==='CHEGADA_CD')return'route-done';return''
+    }
+    function routeAttentionTags(r){
+      const s=norm(r.status),tags=[],returns=r.entregas.filter(e=>norm(e.status)==='RETORNO_REGISTRADO').length;
+      if(norm(r.motoristaConfirmado)==='DIVERGENTE')tags.push(['danger','ATENÇÃO · Motorista divergente']);
+      else if(s==='AGUARDANDO_LIBERACAO')tags.push(['warn','Conferência pendente']);
+      else if(s==='LIBERADA')tags.push(['info','Liberada · aguardando motorista']);
+      else if(s==='SAINDO_CD')tags.push(['info','Saindo do CD']);
+      else if(s==='EM_ROTA'){
+        const active=r.entregas.find(e=>['A_CAMINHO','NO_CLIENTE'].includes(norm(e.status)));
+        tags.push(['live',active?`${deliveryLabels[norm(active.status)]} · ${active.cliente}`:'Em rota']);
+      }else if(s==='VOLTANDO_CD')tags.push(['purple','Voltando para o CD']);
+      else if(s==='CHEGADA_CD')tags.push(['live','Rota concluída']);
+      if(returns)tags.push(['danger',`${returns} retorno${returns>1?'s':''}`]);
+      return tags.map(t=>`<span class="attention-tag ${t[0]}">${esc(t[1])}</span>`).join('')
+    }
+    function timelineState(step,r){
+      const rs=norm(r.status);
+      if(step.type==='start')return rs==='SAINDO_CD'?'active':['EM_ROTA','VOLTANDO_CD','CHEGADA_CD'].includes(rs)?'done':'wait';
+      if(step.type==='delivery'){const s=norm(step.data.status);return s==='ENTREGA_REALIZADA'?'done':s==='RETORNO_REGISTRADO'?'return':['A_CAMINHO','NO_CLIENTE'].includes(s)?'active':'wait'}
+      if(step.type==='return')return rs==='VOLTANDO_CD'?'active':rs==='CHEGADA_CD'?'done':'wait';
+      if(step.type==='arrival')return rs==='CHEGADA_CD'?'done':'wait';return'wait'
+    }
+    function routeTimeline(r){
+      const steps=[{type:'start',label:'Saiu do CD',sub:''},...r.entregas.map((e,i)=>({type:'delivery',label:`${i+1}ª entrega`,sub:e.cliente,data:e})),{type:'return',label:'Voltando CD',sub:''},{type:'arrival',label:'Chegou CD',sub:''}];
+      return steps.map((step,i)=>{
+        const stateStep=timelineState(step,r),prev=i?timelineState(steps[i-1],r):'';
+        const link=i?`<div class="timeline-link ${['done','return'].includes(prev)?'done':prev==='active'?'active':''}"></div>`:'';
+        return `${link}<div class="timeline-step ${stateStep}"><div class="timeline-dot"></div><span>${esc(step.label)}</span>${step.sub?`<small title="${esc(step.sub)}">${esc(step.sub)}</small>`:''}</div>`
+      }).join('')
+    }
+    function routeCard(r){
+      const done=r.entregas.filter(e=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(e.status))).length;
+      return `<div class="route-card clickable ${routeTone(r)}" data-open-route="${esc(r.id)}">
+        <div class="route-summary"><div class="route-top"><div class="route-title"><strong>${esc(vehicleLabel(r.veiculo,r.placa))}</strong><span>Carga ${esc(r.carregamento||'-')} · ${fmtDate(r.dataOperacional)} · ${esc(turnLabel(r.turno))}</span></div>${statusBadge(r.status)}</div><div class="route-tags">${routeAttentionTags(r)}</div><div class="route-meta-inline"><span>Motorista: <strong>${esc(r.motorista||'-')}</strong></span><span>Entregas: <strong>${done}/${r.entregas.length}</strong></span></div></div>
+        <div class="timeline-wrap"><div class="route-timeline">${routeTimeline(r)}</div></div>
+      </div>`
+    }
+    function turnLabel(v){const n=norm(v);return n==='MANHA'?'Manhã':n==='TARDE'?'Tarde':n==='EXTRA'?'Extra':v||'-'}
+    function operationLabel(type,store){const n=norm(type);if(n==='COLETA_LOJA_CD')return `Coleta · ${store?store+' → CD':'Loja → CD'}`;if(n==='ENTREGA_LOJA')return `Entrega loja · ${store?'CD → '+store:'CD → Loja'}`;return 'Entrega cliente · CD → Cliente'}
+    function renderRouteOperationNotice(){
+      const type=norm($('#route-operation').value),store=$('#route-store').value.trim(),box=$('#route-operation-notice');
+      if(!box)return;
+      if(type==='ENTREGA_CLIENTE'){box.innerHTML='';return}
+      const coleta=type==='COLETA_LOJA_CD',dest=store||'a loja informada';
+      box.innerHTML=`<div class="alert alert-info" style="margin:12px 0 8px"><strong>${coleta?'Coleta em loja':'Entrega em loja'} = uma única parada.</strong><br>Todos os pedidos deste carregamento serão tratados operacionalmente em <strong>${esc(dest)}</strong>. Os clientes e endereços abaixo permanecem somente para histórico e conferência e não serão exibidos como destinos separados ao motorista.</div>`
+    }
+    function toggleRouteStore(){const type=norm($('#route-operation').value),show=type!=='ENTREGA_CLIENTE';$('#route-store-field').hidden=!show;$('#route-store').required=show;if(!show)$('#route-store').value='';renderRouteOperationNotice()}
+    function renderRoutesFilters(){
+      const currentVehicle=$('#route-vehicle-filter').value,currentStatus=$('#route-status-filter').value;
+      const statuses=[...new Set((state.data.rotas||[]).map(r=>norm(r.status)).filter(Boolean))];
+      $('#route-status-filter').innerHTML='<option value="">Todos os status</option>'+statuses.map(s=>`<option value="${s}">${esc(routeLabels[s]||s)}</option>`).join('');
+      $('#route-status-filter').value=currentStatus;
+      $('#route-vehicle-filter').innerHTML='<option value="">Todos os veículos</option>'+(state.data.veiculos||[]).map(v=>`<option value="${esc(v.nome)}">${esc(v.label||vehicleLabel(v.nome,v.placa))}</option>`).join('');
+      $('#route-vehicle-filter').value=currentVehicle
+    }
+    function routeClients(r){
+      return unique((r.clientes||[]).concat((r.entregas||[]).map(e=>e.cliente)).filter(Boolean))
+    }
+    function clientDestinationKey(e){
+      const client=norm(e?.cliente||e?.codigoCliente),address=norm(e?.endereco).replace(/[^A-Z0-9]+/g,'');
+      return client&&address?`${client}|${address}`:''
+    }
+    function routeSharedClientCount(r){
+      const keys=new Set((r.entregas||[]).map(clientDestinationKey).filter(Boolean));
+      if(!keys.size)return 0;
+      const sameJourney=o=>o.id!==r.id&&o.dataOperacional===r.dataOperacional&&norm(o.veiculo)===norm(r.veiculo)&&norm(o.turno)===norm(r.turno);
+      let n=0;
+      keys.forEach(k=>{if((state.data.rotas||[]).some(o=>sameJourney(o)&&(o.entregas||[]).some(e=>clientDestinationKey(e)===k)))n++});
+      return n
+    }
+    function routeClientCell(r){
+      const clients=routeClients(r),shared=routeSharedClientCount(r);
+      if(!clients.length)return '<span class="muted">-</span>';
+      const tag=shared?`<div><span class="route-group-tag">${shared} destino${shared===1?'':'s'} em outro carregamento</span></div>`:'';
+      if(clients.length===1)return `<strong>${esc(clients[0])}</strong>${tag}`;
+      const preview=clients.slice(0,2).join(' • ');
+      return `<strong>${clients.length} clientes</strong><div class="small muted" title="${esc(clients.join(' • '))}">${esc(preview)}${clients.length>2?` +${clients.length-2}`:''}</div>${tag}`
+    }
+    function renderRoutesTable(){
+      const q=norm($('#route-search').value),status=norm($('#route-status-filter').value),vehicle=norm($('#route-vehicle-filter').value),date=$('#route-date-filter').value;
+      const routes=(state.data.rotas||[]).filter(r=>{if(status&&norm(r.status)!==status)return false;if(vehicle&&norm(r.veiculo)!==vehicle)return false;if(date&&r.dataOperacional!==date)return false;if(!q)return true;const hay=norm([r.veiculo,r.placa,r.carregamento,r.motorista,...r.entregas.flatMap(e=>[e.cliente,e.codigoCliente,e.endereco,...e.pedidos])].join(' '));return hay.includes(q)});
+      const visibleIds=new Set(routes.map(r=>r.id));[...state.selectedRouteIds].forEach(id=>{if(!visibleIds.has(id))state.selectedRouteIds.delete(id)});
+      $('#routes-body').innerHTML=routes.length?routes.map(r=>{const selectable=norm(r.status)==='AGUARDANDO_LIBERACAO',checked=state.selectedRouteIds.has(r.id);return `<tr class="clickable" data-open-route="${esc(r.id)}"><td><input class="route-select" type="checkbox" data-route-select="${esc(r.id)}" ${checked?'checked':''} ${selectable?'':'disabled'}></td><td>${fmtDate(r.dataOperacional)}</td><td><strong>${esc(vehicleLabel(r.veiculo,r.placa))}</strong></td><td>${esc(r.carregamento)}${r.grupoParadaId?'<div><span class="route-group-tag">Parada unificada</span></div>':''}</td><td>${esc(operationLabel(r.tipoOperacao,r.lojaOperacao))}</td><td>${routeClientCell(r)}</td><td>${esc(r.motorista||'-')}${norm(r.motoristaConfirmado)==='DIVERGENTE'?'<div class="attention small">Divergente</div>':''}</td><td>${r.entregas.length}</td><td>${r.entregas.reduce((n,e)=>n+e.pedidos.length,0)}</td><td>${statusBadge(r.status)}</td><td><button class="btn" type="button">Abrir</button></td></tr>`}).join(''):'<tr><td colspan="11"><div class="empty">Nenhuma rota encontrada.</div></td></tr>';
+      const selectableVisible=routes.filter(r=>norm(r.status)==='AGUARDANDO_LIBERACAO');$('#route-select-all').checked=selectableVisible.length>0&&selectableVisible.every(r=>state.selectedRouteIds.has(r.id));$('#route-select-all').indeterminate=selectableVisible.some(r=>state.selectedRouteIds.has(r.id))&&!$('#route-select-all').checked;updateBulkActions()
+    }
+    function updateBulkActions(){const n=state.selectedRouteIds.size;$('#bulk-count').textContent=`${n} selecionado${n===1?'':'s'}`;$('#bulk-release-open').disabled=n<1;$('#merge-loads').disabled=n<2;$('#unmerge-loads').disabled=n<1}
+    async function mergeLoads(){const ids=[...state.selectedRouteIds];if(ids.length<2)return;if(!confirm(`Unificar ${ids.length} carregamentos em uma única parada para o motorista?`))return;if(!beginAction($('#merge-loads'),'Unificando carregamentos...'))return;try{const res=await rpc('unificarCarregamentos',state.token,ids);applyCentralResult(res,false);state.selectedRouteIds=new Set(ids);renderCentral();toast(res.semAlteracao?'Os carregamentos já estavam unificados.':'Carregamentos unificados. Eles continuam selecionados para você liberar em massa.','success')}catch(e){err(e)}finally{setLoading(false)}}
+    async function unmergeLoads(){const ids=[...state.selectedRouteIds];if(!ids.length)return;if(!confirm('Remover a unificação dos carregamentos selecionados?'))return;if(!beginAction($('#unmerge-loads'),'Desunificando carregamentos...'))return;try{const res=await rpc('desunificarCarregamentos',state.token,ids);applyCentralResult(res,false);state.selectedRouteIds.clear();renderCentral();toast('Unificação removida.','success')}catch(e){err(e)}finally{setLoading(false)}}
+
+    function commonSelectedValue(routes,getter,normalizer=v=>String(v??'').trim()){
+      const vals=routes.map(getter),keys=[...new Set(vals.map(normalizer))];return keys.length===1?vals[0]:''
+    }
+    function selectedRoutesForBulk(){const ids=state.selectedRouteIds;return (state.data.rotas||[]).filter(r=>ids.has(r.id)&&norm(r.status)==='AGUARDANDO_LIBERACAO')}
+    function toggleBulkRouteStore(){const t=norm($('#bulk-route-operation').value),show=['COLETA_LOJA_CD','ENTREGA_LOJA'].includes(t);$('#bulk-route-store-field').hidden=!show;$('#bulk-route-store').required=show;if(!show&&t==='ENTREGA_CLIENTE')$('#bulk-route-store').value=''}
+    function openBulkRelease(){
+      const routes=selectedRoutesForBulk();if(!routes.length){toast('Selecione pelo menos um carregamento aguardando liberação.','error');return}
+      $('#bulk-route-sub').textContent=`${routes.length} carregamento${routes.length===1?'':'s'} selecionado${routes.length===1?'':'s'} para revisão e liberação.`;
+      $('#bulk-route-selection').innerHTML=routes.map(r=>`<span class="order-tag">Carga ${esc(r.carregamento)} · ${esc(vehicleLabel(r.veiculo,r.placa))}</span>`).join('');
+      const commonDate=commonSelectedValue(routes,r=>r.dataOperacional),commonTurn=commonSelectedValue(routes,r=>norm(r.turno)),commonVehicle=commonSelectedValue(routes,r=>r.veiculo,r=>norm(r)),commonDriver=commonSelectedValue(routes,r=>r.motorista,r=>norm(r)),commonOperation=commonSelectedValue(routes,r=>norm(r.tipoOperacao)),commonStore=commonSelectedValue(routes,r=>r.lojaOperacao,r=>norm(r));
+      $('#bulk-route-date').value=commonDate||'';$('#bulk-route-turn').value=commonTurn||'';
+      $('#bulk-route-vehicle').innerHTML='<option value="">Manter como está</option>'+(state.data.veiculos||[]).map(v=>`<option value="${esc(v.nome)}">${esc(v.label||vehicleLabel(v.nome,v.placa))}</option>`).join('');
+      $('#bulk-route-vehicle').value=commonVehicle||'';$('#bulk-route-driver').value=commonDriver||'';$('#bulk-route-operation').value=commonOperation||'';$('#bulk-route-store').value=commonStore||'';toggleBulkRouteStore();
+      const mixed=[];if(!commonDate)mixed.push('data');if(!commonTurn)mixed.push('turno');if(!commonVehicle)mixed.push('veículo');if(!commonDriver)mixed.push('motorista');
+      $('#bulk-route-warning').innerHTML=mixed.length?`<span class="attention">A seleção possui ${esc(mixed.join(', '))} diferentes.</span> Para aparecer como uma única jornada no celular, padronize esses campos antes de liberar.`:'Os dados principais já são compatíveis com uma única jornada. Você pode manter como estão ou alterá-los em massa.';
+      $('#bulk-route-dialog').showModal()
+    }
+    async function bulkReleaseSelected(ev){
+      ev.preventDefault();const ids=[...state.selectedRouteIds];if(!ids.length)return;
+      const payload={rotaIds:ids,dataOperacional:$('#bulk-route-date').value,turno:$('#bulk-route-turn').value,veiculo:$('#bulk-route-vehicle').value,motorista:$('#bulk-route-driver').value,tipoOperacao:$('#bulk-route-operation').value,lojaOperacao:$('#bulk-route-store').value};
+      if(!confirm(`Aplicar a revisão e liberar ${ids.length} carregamento${ids.length===1?'':'s'} como uma única jornada para o motorista?`))return;
+      if(!beginAction($('#bulk-release-confirm'),`Revisando e liberando ${ids.length} carregamento${ids.length===1?'':'s'}...`))return;
+      try{const res=await rpc('revisarLiberarRotasEmMassa',state.token,payload);applyCentralResult(res,false);state.selectedRouteIds.clear();renderCentral();$('#bulk-route-dialog').close();toast(`${res.rotasLiberadas} carregamento${res.rotasLiberadas===1?'':'s'} liberado${res.rotasLiberadas===1?'':'s'} em uma única jornada.`, 'success')}catch(e){err(e)}finally{setLoading(false)}
+    }
+
+    function openRoute(id){
+      const r=(state.data.rotas||[]).find(x=>x.id===id);if(!r)return;
+      $('#route-id').value=r.id;$('#route-dialog-title').textContent=`${vehicleLabel(r.veiculo,r.placa)} • Carregamento ${r.carregamento}`;$('#route-dialog-sub').textContent=`${r.entregas.length} entrega(s) • ${routeLabels[norm(r.status)]||r.status}`;
+      $('#route-date').value=r.dataOperacional||'';$('#route-turn').value=norm(r.turno)||'MANHA';
+      $('#route-vehicle').innerHTML=(state.data.veiculos||[]).map(v=>`<option value="${esc(v.nome)}">${esc(v.label||vehicleLabel(v.nome,v.placa))}</option>`).join('');$('#route-vehicle').value=r.veiculo;
+      $('#route-driver').value=r.motorista||'';$('#route-operation').value=norm(r.tipoOperacao)||'ENTREGA_CLIENTE';$('#route-store').value=r.lojaOperacao||'';toggleRouteStore();
+      $('#route-deliveries').innerHTML=r.entregas.map((e,i)=>`<div class="delivery-edit" data-delivery-edit="${esc(e.id)}"><div class="delivery-edit-head"><strong>${i+1}. ${esc(e.cliente)}</strong>${statusBadge(e.status)}</div><div class="form-grid"><div class="field span-6"><label>Endereço</label><input class="input delivery-address-input" value="${esc(e.endereco)}"></div><div class="field span-3"><label>Telefone</label><input class="input delivery-phone-input" value="${esc(e.telefone)}"></div><div class="field span-3"><label>Pedidos</label>${e.pedidos.map(p=>`<div class="order-tag">${esc(p)} <button class="btn" type="button" data-delete-delivery="${esc(e.id)}" data-delete-order="${esc(p)}" aria-label="Excluir pedido ${esc(p)}">Excluir</button></div>`).join('')}</div></div></div>`).join('');
+      $('#add-avulsa').hidden=!['AGUARDANDO_LIBERACAO','LIBERADA'].includes(norm(r.status));
+      const locked=['SAINDO_CD','EM_ROTA','VOLTANDO_CD','CHEGADA_CD'].includes(norm(r.status));$$('#route-form input,#route-form select').forEach(el=>{if(el.id!=='route-id')el.disabled=locked});
+      $('#save-route').hidden=locked;$('#release-route').hidden=norm(r.status)!=='AGUARDANDO_LIBERACAO';
+      $('#route-alert').innerHTML=norm(r.motoristaConfirmado)==='DIVERGENTE'?'<div class="alert alert-danger">O veículo informou que o motorista exibido não corresponde à pessoa que fará a rota. Corrija o motorista e salve antes da saída.</div>':locked?'<div class="alert alert-info">A rota já saiu do CD. Os dados de revisão estão bloqueados para preservar o histórico operacional.</div>':'';
+      if(!$('#route-dialog').open)$('#route-dialog').showModal()
+    }
+    function routeFormPayload(){return {rotaId:$('#route-id').value,dataOperacional:$('#route-date').value,turno:$('#route-turn').value,veiculo:$('#route-vehicle').value,motorista:$('#route-driver').value,tipoOperacao:$('#route-operation').value,lojaOperacao:$('#route-store').value,entregas:$$('[data-delivery-edit]').map(el=>({id:el.dataset.deliveryEdit,endereco:el.querySelector('.delivery-address-input').value,telefone:el.querySelector('.delivery-phone-input').value}))}}
+    async function saveRoute(ev){
+      ev.preventDefault();const r=(state.data.rotas||[]).find(x=>x.id===$('#route-id').value);if(!r||!beginAction(ev.submitter||$('#save-route'),'Salvando revisão...'))return;
+      try{const res=await rpc('salvarRevisaoRota',state.token,routeFormPayload());applyCentralResult(res,false);renderCentral();$('#route-dialog').close();toast(res.semAlteracao?'Nenhuma alteração para salvar.':'Rota revisada com sucesso.','success')}catch(e){err(e)}finally{setLoading(false)}
+    }
+    async function releaseRoute(ev){
+      const id=$('#route-id').value;if(!confirm('Salvar a conferência atual e liberar esta rota para o veículo?'))return;if(!beginAction(ev?.currentTarget||$('#release-route'),'Salvando e liberando rota...'))return;
+      try{await rpc('salvarRevisaoRota',state.token,routeFormPayload());const res=await rpc('liberarRota',state.token,id);applyCentralResult(res,false);renderCentral();$('#route-dialog').close();toast('Rota salva e liberada para o motorista.','success')}catch(e){err(e)}finally{setLoading(false)}
+    }
+
+    function setCentralView(view){
+      $$('[data-central-view]').forEach(b=>b.classList.toggle('active',b.dataset.centralView===view));
+      $('#central-dashboard').hidden=view!=='dashboard';$('#central-routes').hidden=view!=='routes';$('#central-import').hidden=view!=='import'
+    }
+    async function refreshCentral(silent=false){
+      if(state.busy||state.profile!=='ROTEIRIZADOR')return;if(!silent)setLoading(true,'Atualizando painel...');
+      try{state.data=await rpc('obterBootstrapCentral',state.token);renderCentral()}catch(e){if(!silent)err(e)}finally{if(!silent)setLoading(false)}
+    }
+
+    async function analyzeFile(file){
+      if(!file)return;if(!window.XLSX){toast('A biblioteca de leitura do Excel não carregou. Atualize a página e tente novamente.','error');return}
+      if(!/\.(xls|xlsx)$/i.test(file.name)){toast('Selecione um arquivo .xls ou .xlsx.','error');return}
+      setLoading(true,'Lendo e validando a planilha...');
+      try{
+        const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array',cellDates:true});if(!wb.SheetNames.length)throw new Error('O arquivo não possui planilhas.');
+        const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,dateNF:'dd/mm/yyyy'});
+        state.importRows=rows;state.importFile=file;state.importPreview=await rpc('analisarImportacao',state.token,file.name,rows);renderImportPreview();
+      }catch(e){state.importRows=null;state.importFile=null;state.importPreview=null;err(e)}
+      finally{setLoading(false)}
+    }
+    function renderImportPreview(){
+      const p=state.importPreview;$('#import-empty').hidden=!!p;$('#import-preview').hidden=!p;$('#selected-file').textContent=p?state.importFile.name:'';
+      if(!p)return;const stats=[['Linhas lidas',p.linhasLidas],['Novos pedidos',p.linhasNovas],['Já existentes ignorados',p.pedidosExistentesIgnorados],['Desses, já entregues',p.pedidosEntreguesIgnorados],['Rotas previstas',p.gruposRota],['Entregas previstas',p.entregas]];
+      $('#preview-stats').innerHTML=stats.map(x=>`<div class="preview-stat"><span>${esc(x[0])}</span><strong>${esc(x[1])}</strong></div>`).join('');
+      $('#friday-options').innerHTML=(p.sextas||[]).map(f=>`<div class="friday"><strong>Faturamento de ${fmtDate(f.dataFaturamento)} • ${f.pedidos} pedido(s)</strong><div class="field" style="margin:0"><label>Entregar em</label><select class="select friday-choice" data-friday="${esc(f.dataFaturamento)}"><option value="">Selecione...</option><option value="SABADO">Sábado (${fmtDate(addDaysIso(f.dataFaturamento,1))})</option><option value="SEGUNDA">Segunda-feira (${fmtDate(addDaysIso(f.dataFaturamento,3))})</option></select></div></div>`).join('');
+      $('#invalid-rows').innerHTML=p.invalidas?.length?`<strong>${p.linhasInvalidas} linha(s) inválida(s)</strong>`+p.invalidas.map(x=>`<div>Linha ${x.linha}${x.pedido?' • Pedido '+esc(x.pedido):''}: ${esc(x.erro)}</div>`).join(''):'';
+      $('#confirm-import').disabled=!p.linhasNovas
+    }
+    function addDaysIso(iso,days){const [y,m,d]=iso.split('-').map(Number);const x=new Date(y,m-1,d+days,12);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`}
+    async function confirmImport(){
+      if(!state.importRows||!state.importFile||!state.importPreview)return;
+      const choices={};for(const el of $$('.friday-choice')){if(!el.value){toast('Escolha sábado ou segunda-feira para todas as sextas-feiras.','error');return}choices[el.dataset.friday]=el.value}
+      if(!confirm(`Importar ${state.importPreview.linhasNovas} pedido(s) novo(s)? Os pedidos já existentes serão ignorados sem alteração.`))return;
+      if(!beginAction($('#confirm-import'),'Importando e agrupando pedidos...'))return;
+      try{const res=await rpc('importarLinhas',state.token,state.importFile.name,state.importRows,choices);state.data=res.data;renderCentral();toast(`${res.pedidosImportados} novo(s) importado(s) • ${res.pedidosExistentesIgnorados} já existente(s) ignorado(s).`,'success');state.importRows=null;state.importFile=null;state.importPreview=null;$('#excel-file').value='';$('#selected-file').textContent='';renderImportPreview();setCentralView('routes')}
+      catch(e){err(e)}finally{setLoading(false)}
+    }
+
+    function renderDriver(){
+      const d=state.data;$('#driver-vehicle-label').textContent=d.veiculo?.label||vehicleLabel(d.veiculo?.nome,d.veiculo?.placa);const journeys=d.jornadas||[];
+      if(!journeys.length){$('#driver-route-tabs').innerHTML='';$('#driver-content').innerHTML='<div class="card"><div class="empty">Nenhuma jornada liberada para este veículo.</div></div>';return}
+      if(!journeys.some(j=>j.id===state.selectedJourneyId))state.selectedJourneyId=journeys[0].id;
+      $('#driver-route-tabs').className='driver-journey-tabs';$('#driver-route-tabs').innerHTML=journeys.map(j=>`<button class="journey-chip ${j.id===state.selectedJourneyId?'active':''}" data-select-driver-journey="${esc(j.id)}"><strong>${fmtDate(j.dataOperacional)} · ${esc(turnLabel(j.turno))}</strong><div class="small muted">${j.paradas.length} parada${j.paradas.length>1?'s':''} • ${j.carregamentos.length} carga${j.carregamentos.length>1?'s':''}</div></button>`).join('');
+      renderDriverJourney(journeys.find(j=>j.id===state.selectedJourneyId)||journeys[0])
+    }
+    function renderDriverJourney(j){
+      const status=norm(j.status),confirmed=norm(j.motoristaConfirmado),stops=driverStops(j),done=stops.filter(p=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))).length;
+      let html=`<div class="hero-status"><div class="small" style="opacity:.75">Jornada de ${fmtDate(j.dataOperacional)}</div><h1>${esc(vehicleLabel(j.veiculo,j.placa))}</h1><p>${esc(j.motorista||'Motorista não definido')} • ${j.carregamentos.length} carregamento${j.carregamentos.length>1?'s':''} • ${done}/${stops.length} paradas concluídas</p></div>`;
+      if(j.motoristasDiferentes||confirmed==='DIVERGENTE')html+=`<div class="alert alert-danger"><strong>Correção necessária.</strong><br>Existem divergências de motorista nos carregamentos desta jornada. A Central precisa corrigir antes da saída.</div>`;
+      else if(status==='LIBERADA')html+=`<article class="card"><div class="card-body"><h2 style="margin-top:0">Confirme o motorista</h2><p class="muted">Motorista informado pela Central:</p><div style="font-size:24px;font-weight:800;margin:8px 0 18px">${esc(j.motorista||'Não informado')}</div><div class="driver-action"><button class="btn btn-green big-btn" data-driver-action="confirm-journey" data-date="${esc(j.dataOperacional)}" data-turn="${esc(j.turno)}">Sim, sou este motorista</button><button class="btn btn-danger big-btn" data-driver-action="reject-journey" data-date="${esc(j.dataOperacional)}" data-turn="${esc(j.turno)}">Não, motorista diferente</button></div></div></article>`;
+      else if(status==='SAINDO_CD')html+=`<article class="card"><div class="card-body"><div class="alert alert-info">Motorista confirmado. Ao sair do CD, inicie a jornada.</div><button class="btn btn-primary btn-block big-btn" data-driver-action="start-journey" data-date="${esc(j.dataOperacional)}" data-turn="${esc(j.turno)}">Iniciar jornada</button></div></article>`;
+      else if(status==='VOLTANDO_CD')html+=`<div class="alert alert-info"><strong>Voltando para o CD.</strong> Ao chegar, confirme abaixo.</div><button class="btn btn-green btn-block big-btn" data-driver-action="arrive-journey" data-date="${esc(j.dataOperacional)}" data-turn="${esc(j.turno)}">Cheguei ao CD</button>`;
+      else if(status==='CHEGADA_CD')html+=`<div class="alert alert-info"><strong>Jornada encerrada.</strong> Todas as paradas foram finalizadas e a chegada ao CD foi registrada.</div>`;
+      if(status==='EM_ROTA'){
+        html+=`<div class="driver-section-title"><div><strong>Paradas</strong><div class="small muted">Escolha o próximo destino quando estiver pronto.</div></div><span>${done}/${stops.length} concluídas</span></div>`+stops.map(p=>stopCard(p,p.executionIndex,stops.length)).join('');
+        if(stops.every(p=>['ENTREGA_REALIZADA','RETORNO_REGISTRADO'].includes(norm(p.status))))html+=`<button class="btn btn-primary btn-block big-btn" data-driver-action="return-journey" data-date="${esc(j.dataOperacional)}" data-turn="${esc(j.turno)}">Voltar para o CD</button>`
+      }
+      $('#driver-content').innerHTML=html
+    }
+    function stopStatusBadge(p){const s=norm(p.status);if(s==='ENTREGA_REALIZADA'&&norm(p.tipoOperacao)==='COLETA_LOJA_CD')return '<span class="badge s-done">Coletado</span>';if(s==='ENTREGA_REALIZADA'&&norm(p.tipoOperacao)==='ENTREGA_LOJA')return '<span class="badge s-done">Entregue na loja</span>';return statusBadge(p.status)}
+    function stopCard(p,index,total){
+      const s=norm(p.status),type=norm(p.tipoOperacao),active=['A_CAMINHO','NO_CLIENTE'].includes(s),isCollect=type==='COLETA_LOJA_CD',isStore=type==='ENTREGA_LOJA';let actions='';
+      const target=isCollect?'coleta':isStore?'loja':'cliente';if(s==='PENDENTE')actions=`<button class="btn btn-blue delivery-main-action" data-stop-action="A_CAMINHO" data-stop="${esc(p.id)}">${isCollect?'Ir para coleta':isStore?'Ir para a loja':'Selecionar este cliente'}</button>`;else if(s==='A_CAMINHO')actions=`<button class="btn btn-orange delivery-main-action" data-stop-action="NO_CLIENTE" data-stop="${esc(p.id)}">${isCollect||isStore?'Cheguei à loja':'Cheguei no cliente'}</button>`;else if(s==='NO_CLIENTE')actions=`<button class="btn btn-green delivery-main-action" data-stop-action="ENTREGA_REALIZADA" data-stop="${esc(p.id)}">${isCollect?'Confirmar coleta realizada':isStore?'Confirmar entrega na loja':'Confirmar entrega realizada'}</button><button class="btn btn-danger delivery-main-action" data-return-open="${esc(p.id)}">Registrar retorno</button>`;
+      const phone=p.telefone?`<a class="btn" href="tel:${encodeURIComponent(p.telefone)}">Ligar</a>`:'<button class="btn" disabled>Sem telefone</button>',destino=p.enderecoMapa||p.endereco||p.titulo,maps=destino?`<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}">Abrir endereço</a>`:'<button class="btn" disabled>Sem endereço</button>',typeTag=isCollect?'<span class="stop-type coleta">COLETA · LOJA → CD</span>':isStore?'<span class="stop-type loja">ENTREGA LOJA · CD → LOJA</span>':'<span class="stop-type">ENTREGA CLIENTE</span>',group=p.carregamentos.length>1?'<span class="stop-type stop-group">CARREGAMENTOS UNIFICADOS</span>':'';
+      const pedidosHtml=(isCollect||isStore)
+        ? `<div class="order-tags"><span class="order-tag">${p.pedidos.length} pedido${p.pedidos.length===1?'':'s'} vinculado${p.pedidos.length===1?'':'s'}</span>${p.pedidosAntigos.length?`<span class="order-tag" style="background:#fff2dc;color:#966000">${p.pedidosAntigos.length} antigo(s)</span>`:''}</div>${p.pedidos.length?`<details style="margin-top:8px"><summary class="small muted" style="cursor:pointer">Ver pedidos do carregamento</summary><div class="order-tags" style="margin-top:8px">${p.pedidos.map(x=>`<span class="order-tag">Pedido ${esc(x)}</span>`).join('')}</div></details>`:''}`
+        : `<div class="order-tags">${p.pedidos.map(x=>`<span class="order-tag">Pedido ${esc(x)}</span>`).join('')}${p.pedidosAntigos.length?`<span class="order-tag" style="background:#fff2dc;color:#966000">${p.pedidosAntigos.length} antigo(s)</span>`:''}</div>`;
+      const pendencyButton=s==='ENTREGA_REALIZADA'&&!isCollect?`<button class="btn btn-blue" type="button" data-pendency-open="${esc(p.id)}">⚠️ Registrar pendência SAC</button>`:'';
+      return `<div class="delivery-card ${active?'active':''}"><div class="delivery-sequence">${norm(p.status)==='PENDENTE'?'Pendente · sequência livre':`Parada ${index+1} de ${total}`}</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px">${typeTag}${group}</div><div class="delivery-title"><div><h3>${esc(p.titulo||target)}</h3>${p.codigoCliente?`<div class="small muted">${esc(p.codigoCliente)}</div>`:''}</div>${stopStatusBadge(p)}</div><div class="stop-loads">Carregamento${p.carregamentos.length>1?'s':''}: ${esc(p.carregamentos.join(', '))}</div><div class="delivery-address">${esc(p.endereco||p.titulo||'Destino não informado')}</div>${pedidosHtml}<div class="delivery-actions">${phone}${maps}${actions}${pendencyButton}</div>${p.motivoRetorno?`<div class="alert alert-danger" style="margin:12px 0 0">Motivo: ${esc(p.motivoRetorno)}</div>`:''}</div>`
+    }
+
+    async function refreshDriver(silent=false){
+      if(state.busy||state.profile!=='MOTORISTA')return;if(!silent)setLoading(true,'Atualizando rota...');
+      try{state.data=await rpc('obterBootstrapMotorista',state.token);renderDriver()}catch(e){if(!silent)err(e)}finally{if(!silent)setLoading(false)}
+    }
+    async function driverAction(action,date,turn,button){
+      const labels={'confirm-journey':'Confirmando motorista...','reject-journey':'Registrando divergência...','start-journey':'Iniciando jornada...','return-journey':'Registrando retorno ao CD...','arrive-journey':'Registrando chegada ao CD...'};if(!beginAction(button,labels[action]||'Atualizando jornada...'))return;
+      try{let res;if(action==='confirm-journey')res=await rpc('confirmarJornada',state.token,date,turn,true);else if(action==='reject-journey')res=await rpc('confirmarJornada',state.token,date,turn,false);else if(action==='start-journey')res=await rpc('iniciarJornada',state.token,date,turn);else if(action==='return-journey')res=await rpc('voltarParaCDJornada',state.token,date,turn);else if(action==='arrive-journey')res=await rpc('chegadaCDJornada',state.token,date,turn);applyDriverResult(res,false);renderDriver();toast('Jornada atualizada.','success')}catch(e){err(e)}finally{setLoading(false)}
+    }
+    async function stopAction(id,action,button){const label=action==='A_CAMINHO'?'Selecionando parada...':action==='NO_CLIENTE'?'Registrando chegada...':'Confirmando conclusão...';if(!beginAction(button,label))return;try{const res=await rpc('atualizarParada',state.token,id,action,'');applyDriverResult(res,false);renderDriver();if(action==='A_CAMINHO')requestAnimationFrame(()=>$('#driver-content .delivery-card.active')?.scrollIntoView({behavior:'smooth',block:'start'}));toast('Parada atualizada.','success')}catch(e){err(e)}finally{setLoading(false)}}
+    function openReturn(id){$('#return-delivery-id').value=id;$('#return-reason').innerHTML='<option value="">Selecione...</option>'+(state.data.motivos||[]).map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');$('#return-dialog').showModal()}
+    async function confirmReturn(){const id=$('#return-delivery-id').value,reason=$('#return-reason').value;if(!reason){toast('Selecione o motivo do retorno.','error');return}if(!beginAction($('#confirm-return'),'Registrando retorno...'))return;try{const res=await rpc('atualizarParada',state.token,id,'RETORNO_REGISTRADO',reason);applyDriverResult(res,false);$('#return-dialog').close();renderDriver();toast('Retorno registrado.','success')}catch(e){err(e)}finally{setLoading(false)}}
+
+
+    let pendenciaAtual = null;
+    const novoTokenPendencia = () => 'RS' + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+
+    function adicionarItemPendencia() {
+      if (!pendenciaAtual) return;
+      if ($$('#pendency-items .pendency-item').length >= pendenciaAtual.form.maxItens) return toast('Limite de materiais atingido.','error');
+      const div = document.createElement('div'); div.className='pendency-item item-card';
+      div.innerHTML=`<div class="inline" style="justify-content:space-between"><strong>Material ${$$('#pendency-items .pendency-item').length+1}</strong><button type="button" class="btn btn-danger pendency-remove">Remover</button></div>
+        <div class="field"><label>Descrição do material</label><input class="input p-material" maxlength="500" required placeholder="Ex.: Piso cerâmico modelo X"></div>
+        <div class="form-grid"><div class="field span-6"><label>Quantidade</label><input class="input p-qty" type="number" step="any" min="0.001" required></div><div class="field span-6"><label>Unidade</label><select class="select p-unit"><option value="UND">UND</option><option value="CAIXA">CAIXA</option><option value="PEÇA">PEÇA</option></select></div></div>
+        <div class="field"><label>Foto/vídeo do material *</label><input class="input p-photo" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" required></div>
+        <div class="field"><label>Foto do pedido *</label><input class="input p-order-photo" type="file" accept="image/jpeg,image/png,image/webp" required></div>`;
+      div.querySelector('.pendency-remove').onclick=()=>{if($$('#pendency-items .pendency-item').length<=1)return toast('Pelo menos um material é obrigatório.','error');div.remove();$$('#pendency-items .pendency-item strong').forEach((e,i)=>e.textContent='Material '+(i+1))};
+      div.querySelectorAll('input[type=file]').forEach(input=>input.addEventListener('change',()=>{delete input.dataset.uploadedId}));
+      $('#pendency-items').appendChild(div);
+    }
+
+    async function abrirPendenciaRota(paradaId) {
+      if (state.busy) return;
+      setLoading(true,'Preparando formulário de pendência...');
+      try {
+        const form=await rpc('obterFormularioPendenciaRota',state.token,paradaId);
+        pendenciaAtual={paradaId,form,tokenEnvio:novoTokenPendencia()};
+        $('#pendency-context').textContent=`Motorista: ${form.motorista} • ${form.carro}`;
+        $('#pendency-order').innerHTML=form.pedidos.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+        $('#pendency-reason').innerHTML='<option value="">Selecione o motivo...</option>'+form.motivos.map(x=>`<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join('');
+        $('#pendency-observation').value='';$('#pendency-items').innerHTML='';adicionarItemPendencia();
+        $('#pendency-dialog').showModal();
+      } catch(e) {err(e)} finally {setLoading(false)}
+    }
+
+    function lerArquivoPendencia(file) {
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Não foi possível ler o arquivo.'));reader.readAsDataURL(file)
+      });
+    }
+    async function reduzirFotoPendencia(file,limite) {
+      if (!file.type.startsWith('image/') || file.size<=limite) return file;
+      const url=URL.createObjectURL(file),img=new Image();
+      try {
+        await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('Não foi possível processar a foto.'));img.src=url});
+        const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+        if(!ctx)throw new Error('Este navegador não permite otimizar a foto.');
+        for(const max of [1800,1400,1100,900]){
+          const scale=Math.min(1,max/Math.max(img.width,img.height));
+          canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));
+          ctx.drawImage(img,0,0,canvas.width,canvas.height);
+          for(const quality of [.84,.72,.58]){
+            const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));
+            if(blob && blob.size<=limite)return new File([blob],file.name.replace(/\.[^.]+$/, '')+'.jpg',{type:'image/jpeg'});
+          }
+        }
+        throw new Error('A foto ultrapassou o limite de tamanho mesmo após otimização.');
+      } finally { URL.revokeObjectURL(url) }
+    }
+    async function enviarArquivoPendencia(input, tipo, indice) {
+      if (input.dataset.uploadedId) return input.dataset.uploadedId;
+      const file=input.files[0];if(!file)throw new Error('Anexe '+(tipo==='MATERIAL'?'foto/vídeo do material':'foto do pedido')+' '+indice+'.');
+      const video=file.type.startsWith('video/');
+      const limite=(video?pendenciaAtual.form.maxVideoMb:pendenciaAtual.form.maxFotoMb)*1048576;
+      setLoading(true,`Enviando ${tipo==='MATERIAL'?'material':'pedido'} ${indice}...`);
+      const ajustado=await reduzirFotoPendencia(file,limite);
+      if(ajustado.size>limite)throw new Error('Arquivo '+indice+' maior que o limite de '+(limite/1048576)+' MB.');
+      const resultado=await rpc('uploadArquivoPendenciaRota',state.token,pendenciaAtual.paradaId,pendenciaAtual.tokenEnvio,tipo,{nome:ajustado.name,dataUrl:await lerArquivoPendencia(ajustado)});
+      input.dataset.uploadedId=resultado.arquivoId;
+      return resultado.arquivoId;
+    }
+
+    async function salvarPendenciaRota(event) {
+      event.preventDefault();if (!pendenciaAtual||state.busy)return;
+      const motivoId=$('#pendency-reason').value,observacao=$('#pendency-observation').value.trim();
+      const motivo=pendenciaAtual.form.motivos.find(x=>x.id===motivoId);
+      if(!motivo)return toast('Selecione o motivo.','error');
+      if(norm(motivo.nome)==='OUTRO'&&!observacao)return toast('Explique o motivo na observação.','error');
+      const cards=$$('#pendency-items .pendency-item');
+      try {
+        const itens=[];
+        for(let i=0;i<cards.length;i++){
+          const card=cards[i],material=card.querySelector('.p-material').value.trim();
+          const quantidade=Number(card.querySelector('.p-qty').value);
+          if(!material||!(quantidade>0))throw new Error('Confira a descrição e a quantidade do material '+(i+1)+'.');
+          itens.push({material,quantidade,unidade:card.querySelector('.p-unit').value,
+            fotoId:await enviarArquivoPendencia(card.querySelector('.p-photo'),'MATERIAL',i+1),
+            pedidoFotoId:await enviarArquivoPendencia(card.querySelector('.p-order-photo'),'PEDIDO',i+1)});
+        }
+        setLoading(true,'Registrando a pendência no SAC...');
+        const resposta=await rpc('registrarPendenciaRota',state.token,{
+          paradaId:pendenciaAtual.paradaId,tokenEnvio:pendenciaAtual.tokenEnvio,
+          nfPedido:$('#pendency-order').value,motivoId,observacao,itens
+        });
+        $('#pendency-dialog').close();pendenciaAtual=null;
+        toast('Pendência '+resposta.protocolo+(resposta.duplicada?' já registrada.':' enviada ao SAC.'),'success');
+        alert('Protocolo da pendência: '+resposta.protocolo+'\nO SAC receberá o registro no sistema atual.');
+      }catch(e){err(e)}finally{setLoading(false)}
+    }
+
+    function bind(){
+      $$('[data-login-tab]').forEach(b=>b.onclick=()=>switchLogin(b.dataset.loginTab));
+      $('#central-login').onsubmit=loginCentral;$('#driver-login').onsubmit=loginDriver;
+      $('#pendency-form').onsubmit=salvarPendenciaRota;$('#pendency-add').onclick=adicionarItemPendencia;
+      ['pendency-close','pendency-cancel'].forEach(id=>$('#'+id).onclick=()=>$('#pendency-dialog').close());
+      $$('[data-action="logout"]').forEach(b=>b.onclick=logout);
+      $('[data-action="refresh-central"]').onclick=()=>refreshCentral(false);$('[data-action="refresh-driver"]').onclick=()=>refreshDriver(false);
+      $$('[data-central-view]').forEach(b=>b.onclick=()=>setCentralView(b.dataset.centralView));
+      $('#dashboard-date-filter').onchange=e=>{state.dashboardDate=e.target.value||serverToday();sessionStorage.setItem('rota_simples_dashboard_date',state.dashboardDate);renderKpis();renderActiveRoutes()};$('#dashboard-today').onclick=()=>{const d=serverToday();$('#dashboard-date-filter').value=d;state.dashboardDate=d;sessionStorage.setItem('rota_simples_dashboard_date',d);renderKpis();renderActiveRoutes()};
+      ['route-search','route-status-filter','route-vehicle-filter','route-date-filter'].forEach(id=>$('#'+id).addEventListener(id.includes('search')?'input':'change',renderRoutesTable));$('#bulk-release-open').onclick=openBulkRelease;$('#merge-loads').onclick=mergeLoads;$('#unmerge-loads').onclick=unmergeLoads;$('#route-select-all').onchange=e=>{const q=norm($('#route-search').value),status=norm($('#route-status-filter').value),vehicle=norm($('#route-vehicle-filter').value),date=$('#route-date-filter').value;(state.data.rotas||[]).filter(r=>norm(r.status)==='AGUARDANDO_LIBERACAO'&&(!status||norm(r.status)===status)&&(!vehicle||norm(r.veiculo)===vehicle)&&(!date||r.dataOperacional===date)&&(!q||norm([r.veiculo,r.placa,r.carregamento,r.motorista,...r.entregas.flatMap(x=>[x.cliente,x.codigoCliente,x.endereco,...x.pedidos])].join(' ')).includes(q))).forEach(r=>e.target.checked?state.selectedRouteIds.add(r.id):state.selectedRouteIds.delete(r.id));renderRoutesTable()};
+      $('#bulk-route-form').onsubmit=bulkReleaseSelected;$('#bulk-route-operation').onchange=toggleBulkRouteStore;$$('[data-action="close-bulk-route-dialog"]').forEach(b=>b.onclick=()=>$('#bulk-route-dialog').close());
+      $('#add-avulsa').onclick=openAvulsa;$('#avulsa-form').onsubmit=saveAvulsa;$('#close-avulsa').onclick=()=>$('#avulsa-dialog').close();
+      $('#route-form').onsubmit=saveRoute;$('#release-route').onclick=releaseRoute;$('#route-operation').onchange=toggleRouteStore;$('#route-store').oninput=renderRouteOperationNotice;$('[data-action="close-route-dialog"]').onclick=()=>$('#route-dialog').close();
+      $('[data-action="close-journey-detail-dialog"]').onclick=()=>$('#journey-detail-dialog').close();
+      $('[data-action="close-return-dialog"]').onclick=()=>$('#return-dialog').close();$('#confirm-return').onclick=confirmReturn;
+      $('#choose-file').onclick=()=>$('#excel-file').click();$('#excel-file').onchange=e=>analyzeFile(e.target.files[0]);$('#confirm-import').onclick=confirmImport;
+      const dz=$('#drop-zone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));dz.addEventListener('drop',e=>analyzeFile(e.dataTransfer.files[0]));
+      document.addEventListener('click',e=>{
+        const del=e.target.closest('[data-delete-delivery]');if(del){deleteOrder(del);return}
+        const manage=e.target.closest('[data-manage-load]');if(manage){$('#journey-detail-dialog').close();openRoute(manage.dataset.manageLoad);return}
+        const journey=e.target.closest('[data-open-journey]');if(journey){openJourneyDetails(journey.dataset.openJourney);return}
+        const open=e.target.closest('[data-open-route]');if(open&&!e.target.closest('[data-route-select]'))openRoute(open.dataset.openRoute);
+        const check=e.target.closest('[data-route-select]');if(check){e.stopPropagation();check.checked?state.selectedRouteIds.add(check.dataset.routeSelect):state.selectedRouteIds.delete(check.dataset.routeSelect);updateBulkActions();return}
+        const sel=e.target.closest('[data-select-driver-journey]');if(sel){state.selectedJourneyId=sel.dataset.selectDriverJourney;renderDriver()}
+        const da=e.target.closest('[data-driver-action]');if(da)driverAction(da.dataset.driverAction,da.dataset.date,da.dataset.turn,da);
+        const sa=e.target.closest('[data-stop-action]');if(sa)stopAction(sa.dataset.stop,sa.dataset.stopAction,sa);
+        const ro=e.target.closest('[data-return-open]');if(ro)openReturn(ro.dataset.returnOpen);
+        const pend=e.target.closest('[data-pendency-open]');if(pend)abrirPendenciaRota(pend.dataset.pendencyOpen)
+      })
+      document.addEventListener('keydown',e=>{const row=e.target.classList?.contains('route-monitor-row')?e.target:null;if(row&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openJourneyDetails(row.dataset.openJourney)}})
+    }
+    boot();
+  </script>
+
+  <script>
+    // Ponte restrita a navegação; não expõe dados nem funções do servidor.
+    if(SIMPLIFIQUE_ANDROID) window.addEventListener('message', event=>{
+      if(event.data!=='simplifique:back')return;
+      const port=window.SimplifiqueNavigation;
+      if(!port)return;
+      if(state.busy){port.postMessage('handled');return;}
+      const dialogs=[...document.querySelectorAll('dialog[open]')];
+      const dialog=dialogs.at(-1);
+      if(dialog){
+        if(dialog.id!=='pendency-dialog'||confirm('Fechar este formulário? Os dados ainda não enviados serão descartados ao abri-lo novamente.'))dialog.close();
+        port.postMessage('handled');
+      }else port.postMessage('exit');
+    });
+  </script>
+</body>
+</html>

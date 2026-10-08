@@ -1,0 +1,117 @@
+--- original/Code.gs
++++ ajustado/Code.gs
+@@ -55,6 +55,7 @@
+ 
+ function doGet() {
+   return HtmlService.createHtmlOutputFromFile('Index')
++    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
+     .setTitle('Rota Simples | Simplifique Home Center');
+ }
+ 
+--- original/Index.html
++++ ajustado/Index.html
+@@ -3,7 +3,7 @@
+ <head>
+   <base target="_top">
+   <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
++  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+   <meta name="theme-color" content="#132f55">
+   <title>Rota Simples</title>
+   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+@@ -224,6 +224,52 @@
+     #pendency-dialog .modal-body {max-height:calc(88vh - 68px);overflow-y:auto}
+     #pendency-dialog input[type=file] {padding:9px;min-width:0;font-size:12px}
+   </style>
++<script>
++    const SIMPLIFIQUE_ANDROID = /SimplifiqueRotasAndroid\/1/.test(navigator.userAgent);
++    if (SIMPLIFIQUE_ANDROID) document.documentElement.classList.add('simplifique-android');
++  </script>
++<style id="simplifique-android-css">
++/* Apenas o aplicativo identificado pelo User-Agent; desktop preservado. */
++html.simplifique-android .login-tabs,html.simplifique-android #central-login{display:none!important}
++html.simplifique-android #driver-login:not([hidden]){display:block}
++html.simplifique-android .login-pane{padding:24px 18px;min-height:0}
++html.simplifique-android .login{min-height:100dvh;padding:16px 0}
++html.simplifique-android .login-shell{min-height:0}
++html.simplifique-android .login-pane>p{line-height:1.5}
++html.simplifique-android .btn,html.simplifique-android .input,html.simplifique-android .select{min-height:48px;font-size:16px}
++html.simplifique-android textarea{font:inherit}
++html.simplifique-android #driver-app{padding-top:0;min-height:100dvh}
++html.simplifique-android #driver-app .topbar{position:sticky;height:auto;min-height:72px;flex-wrap:wrap;padding:10px 12px;gap:8px;overflow:visible}
++html.simplifique-android #driver-app .topbar-left{flex:1 1 200px;gap:10px}
++html.simplifique-android #driver-app .topbar-right{margin-left:auto;gap:8px}
++html.simplifique-android #driver-app .app-title{min-width:0;overflow-wrap:anywhere}
++html.simplifique-android #driver-app .workspace.driver{width:100%!important;max-width:720px!important;margin:auto!important;padding:12px 12px 28px!important}
++html.simplifique-android #driver-app .driver-journey-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));overflow:visible;padding:2px}
++html.simplifique-android #driver-app .journey-chip{width:100%;min-width:0;max-width:none;min-height:64px;white-space:normal}
++html.simplifique-android #driver-app .delivery-title{flex-wrap:wrap;gap:8px}
++html.simplifique-android #driver-app .delivery-title>div{min-width:0;flex:1 1 170px}
++html.simplifique-android #driver-app .delivery-card,html.simplifique-android #driver-app .hero-status{overflow-wrap:anywhere}
++html.simplifique-android .badge,html.simplifique-android .order-tag{white-space:normal;overflow-wrap:anywhere}
++html.simplifique-android #driver-app .delivery-actions{grid-template-columns:minmax(0,1fr)}
++html.simplifique-android #driver-app .delivery-actions .btn{width:100%;font-size:16px;min-height:52px;text-align:center;white-space:normal}
++html.simplifique-android #driver-app summary{padding:12px 0;min-height:48px;font-size:14px}
++html.simplifique-android .driver-section-title{flex-wrap:wrap}
++html.simplifique-android #return-dialog,html.simplifique-android #pendency-dialog{width:calc(100% - 16px)!important;max-width:690px;max-height:calc(100dvh - 16px);margin:auto}
++html.simplifique-android #pendency-dialog .modal-body{max-height:calc(100dvh - 150px);padding:14px}
++html.simplifique-android #return-dialog .modal-body{padding:14px}
++html.simplifique-android .modal-head{padding:14px;gap:8px;align-items:flex-start}
++html.simplifique-android .modal-head>div{min-width:0;overflow-wrap:anywhere}
++html.simplifique-android .modal-head h2{font-size:19px}
++html.simplifique-android .modal-head>.btn{flex-shrink:0;padding:8px}
++html.simplifique-android #pendency-dialog .form-grid{grid-template-columns:minmax(0,1fr)}
++html.simplifique-android #pendency-dialog .form-grid>.field{grid-column:1/-1;min-width:0}
++html.simplifique-android #pendency-dialog input[type=file]{font-size:14px;max-width:100%;min-height:52px}
++html.simplifique-android #pendency-dialog .modal-actions{display:grid;grid-template-columns:minmax(0,1fr)}
++html.simplifique-android .field label{font-size:13px}
++html.simplifique-android input,html.simplifique-android select,html.simplifique-android textarea{scroll-margin-block:90px}
++html.simplifique-android #loading{max-width:calc(100vw - 24px)}
++html.simplifique-android .loading-box{white-space:normal}
++</style>
+ </head>
+ <body>
+   <section id="login-view" class="login">
+@@ -499,6 +545,12 @@
+     async function boot(){
+       $$('[data-logo]').forEach(i=>i.src=LOGO_DATA);
+       bind();
++      if(SIMPLIFIQUE_ANDROID){
++        switchLogin('motorista');
++        $('#login-view h2').textContent='Simplifique Rotas';
++        $('#login-view .login-pane>p').textContent='Selecione o veículo e entre com sua senha.';
++        $('#login-view .login-note').textContent='Simplifique Home Center • Acesso do motorista';
++      }
+       await loadVehiclesLogin();
+       if(!state.token){showLogin();switchLogin(window.matchMedia('(max-width:760px)').matches?'motorista':'central');return}
+       setLoading(true,'Restaurando sessão...');
+@@ -508,6 +560,7 @@
+       try{state.vehiclesLogin=await rpc('listarVeiculosLogin');$('#driver-vehicle').innerHTML='<option value="">Selecione o veículo</option>'+state.vehiclesLogin.map(v=>{const label=v.label||vehicleLabel(v.nome,v.placa);return `<option value="${esc(label)}">${esc(label)}</option>`}).join('')}catch(e){}
+     }
+     function switchLogin(tab){
++      if(SIMPLIFIQUE_ANDROID) tab='motorista';
+       $$('[data-login-tab]').forEach(b=>b.classList.toggle('active',b.dataset.loginTab===tab));
+       $('#central-login').hidden=tab!=='central';$('#driver-login').hidden=tab!=='motorista'
+     }
+@@ -969,5 +1022,21 @@
+     }
+     boot();
+   </script>
++
++  <script>
++    // Ponte restrita a navegação; não expõe dados nem funções do servidor.
++    if(SIMPLIFIQUE_ANDROID) window.addEventListener('message', event=>{
++      if(event.data!=='simplifique:back')return;
++      const port=window.SimplifiqueNavigation;
++      if(!port)return;
++      if(state.busy){port.postMessage('handled');return;}
++      const dialogs=[...document.querySelectorAll('dialog[open]')];
++      const dialog=dialogs.at(-1);
++      if(dialog){
++        if(dialog.id!=='pendency-dialog'||confirm('Fechar este formulário? Os dados ainda não enviados serão descartados ao abri-lo novamente.'))dialog.close();
++        port.postMessage('handled');
++      }else port.postMessage('exit');
++    });
++  </script>
+ </body>
+ </html>

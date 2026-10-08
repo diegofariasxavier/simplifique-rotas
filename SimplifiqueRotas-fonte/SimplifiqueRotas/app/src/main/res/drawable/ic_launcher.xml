@@ -1,0 +1,4 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape><solid android:color="#132f55"/><corners android:radius="18dp"/></shape></item>
+    <item android:left="5dp" android:right="5dp" android:top="5dp" android:bottom="5dp"><bitmap android:src="@drawable/logo_empresa" android:gravity="center"/></item>
+</layer-list>
